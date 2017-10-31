@@ -1641,13 +1641,15 @@ double* area1, double* area2)
 	for (int p = 0; p < range.size()-1; p++)
 	{
 		output += "\t";
-		output += QString::number((range[p]+range[p+1])/2.0, 'E', 8);
-		output += "\t";           // We take the fraction of the total and turn
-		// it into a percentage
+		//output += QString::number((range[p]+range[p+1])/2.0, 'E', 8);
+		output += QString::number(range[p+1], 'E', 8);
+		output += "\t"; 
+		
+		// We take the fraction of the total and turn it into a percentage
 		output += QString::number(freq[p]/(*nVox), 'E', 8);
 		output += "\n";
 
-		// Calcualte the integrals from -2 to 2
+		// Calculate the integrals from -2 to 2
 		if (range[p] > -2 && range[p+1] < 2)
 		*area2 += double(freq[p])/(*nVox);
 		else if (range[p] < -2 && range[p+1] > -2)
@@ -1657,7 +1659,7 @@ double* area1, double* area2)
 		*area2 += double(freq[p])/(*nVox)
 		*(-2.0+range[p+1])/(range[p+1]-range[p]);
 
-		// Calcualte the integrals from -1 to 1
+		// Calculate the integrals from -1 to 1
 		if (range[p] > -1 && range[p+1] < 1)
 		*area1 += double(freq[p])/(*nVox);
 		else if (range[p] < -1 && range[p+1] > -1)
