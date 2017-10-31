@@ -582,36 +582,36 @@ void Interface::rebinBounds()
     
     if (file->open(QIODevice::ReadOnly | QIODevice::Text))
     {
-	input = new QTextStream (file);
-	
-	for (int n = 0; n < 3; n++)
-	{
-	    line = input->readLine();
-	    int i = 0, f = 0;
-	    bounds[n].clear();
-	    while (line.size() > f)
-	    {
-		while (!(line.at(i).isDigit() ||
-			 line.at(i) == QChar('-')))
-		    i++;
+		input = new QTextStream (file);
 		
-		f = i;
-		
-		while ((line.at(f).isDigit() ||
-		        line.at(f) == QChar('.') ||
-		        line.at(f) == QChar('-')) &&
-		       f < line.size())
-		    f++;
+		for (int n = 0; n < 3; n++)
+		{
+			line = input->readLine();
+			int i = 0, f = 0;
+			bounds[n].clear();
+			while (line.size() > f)
+			{
+			while (!(line.at(i).isDigit() ||
+				 line.at(i) == QChar('-')))
+				i++;
+			
+			f = i;
+			
+			while ((line.at(f).isDigit() ||
+					line.at(f) == QChar('.') ||
+					line.at(f) == QChar('-')) &&
+				   f < line.size())
+				f++;
 
-		bounds[n] += line.mid(i, f-i).toDouble();
-		i=f;
+			bounds[n] += line.mid(i, f-i).toDouble();
+			i=f;
+			
+			if (f == line.size())
+				break;
+			}
+		}
 		
-		if (f == line.size())
-		    break;
-	    }
-	}
-	
-	delete input;
+		delete input;
     }
     delete file;
 
@@ -2143,8 +2143,8 @@ void Interface::statH(Dose* comp)
 	}
 	else
 	{
-	    minFinal = statMin->getText().toInt();
-	    maxFinal = statMax->getText().toInt();
+	    minFinal = statMin->getText().toDouble();
+	    maxFinal = statMax->getText().toDouble();
 	}
 	
 	int n = 0;
@@ -2905,9 +2905,9 @@ void Interface::stat()
     
     if (statBin->getText().toInt() <= 0)
     {
-	badInput.showMessage(tr("The number of bins must be an integer ")+
-			     tr("greater than zero."));
-	return;
+		badInput.showMessage(tr("The number of bins must be an integer ")+
+					 tr("greater than zero."));
+		return;
     }
 	    
     QStringList list;
