@@ -1249,12 +1249,9 @@ QString Dose::plot (QString axis, double a, double b, double start, double stop)
 	return output;
 }
 
-QString Dose::plot(double xi, double xf, double yi, double yf, double zi,
-double zf, EGSPhant* egsphant, QVector <char>* med,
-double* min, double *eMin, double* max, double* eMax,
-double* avg, double *eAvg, double* meanErr, double* maxErr,
-double* totVol, double* nVox, QVector <double>* Dx,
-QVector <double>* Vx)
+QString Dose::plot(double xi, double xf, double yi, double yf, double zi, double zf, EGSPhant* egsphant, QVector <char>* med,
+					double* min, double *eMin, double* max, double* eMax, double* avg, double *eAvg, double* meanErr, double* maxErr,
+					double* totVol, double* nVox, QVector <double>* Dx, QVector <double>* Vx)
 {
 	// Build a QString that holds a curve to be plotted in xmgrace
 	QString output = "";
@@ -1266,32 +1263,28 @@ QVector <double>* Vx)
 	if (egsphant != NULL) // If we do have an egsphant file
 	{
 		for (int k = 0; k < val[0][0].size(); k++)
-		for (int j = 0; j < val[0].size(); j++)
-		for (int i = 0; i < val.size(); i++)
-		for (int m = 0; m < med->size(); m++) //media agreement
-		if (egsphant->getMedia((cx[i+1]+cx[i])/2.0,
-					(cy[j+1]+cy[j])/2.0,
-					(cz[k+1]+cz[k])/2.0) ==
-				(*med)[m])
-		if (!n++) // Initialize min and max with dose
-		{         // within the volume
-			*max = *min = val[i][j][k];
-			*maxErr = err[i][j][k];
-		}
+			for (int j = 0; j < val[0].size(); j++)
+				for (int i = 0; i < val.size(); i++)
+					for (int m = 0; m < med->size(); m++) //media agreement
+						if (egsphant->getMedia((cx[i+1]+cx[i])/2.0, (cy[j+1]+cy[j])/2.0, (cz[k+1]+cz[k])/2.0) == (*med)[m])
+							if (!n++) // Initialize min and max with dose
+							{         // within the volume
+								*max = *min = val[i][j][k];
+								*maxErr = err[i][j][k];
+							}
 	}
-	else if ((xi != xf) && (yi != yf) && (zi != zf)) // If region has nonzero
-	{                                                // volume
+	else if ((xi != xf) && (yi != yf) && (zi != zf)) // If region has nonzero volume
+	{
 		for (int k = 0; k < val[0][0].size(); k++)   
-		for (int j = 0; j < val[0].size(); j++)
-		for (int i = 0; i < val.size(); i++)
-		if ((cx[i+1]+cx[i])/2.0 > xi && (cx[i+1]+cx[i])/2.0 < xf &&
-				(cy[j+1]+cy[j])/2.0 > yi && (cy[j+1]+cy[j])/2.0 < yf &&
-				(cz[k+1]+cz[k])/2.0 > zi && (cz[k+1]+cz[k])/2.0 < zf)
-		if (!n++) // Initialize min and max with dose
-		{         // within the volume
-			*max = *min = val[i][j][k];
-			*maxErr = err[i][j][k];
-		}
+			for (int j = 0; j < val[0].size(); j++)
+				for (int i = 0; i < val.size(); i++)
+					if ((cx[i+1]+cx[i])/2.0 > xi && (cx[i+1]+cx[i])/2.0 < xf && (cy[j+1]+cy[j])/2.0 > yi && (cy[j+1]+cy[j])/2.0 < yf &&
+						(cz[k+1]+cz[k])/2.0 > zi && (cz[k+1]+cz[k])/2.0 < zf)
+						if (!n++) // Initialize min and max with dose
+						{         // within the volume
+							*max = *min = val[i][j][k];
+							*maxErr = err[i][j][k];
+						}
 	}
 	else // If we are analyzing entire 3ddose file
 	{

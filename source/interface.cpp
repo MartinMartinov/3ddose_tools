@@ -1785,22 +1785,22 @@ void Interface::plotDVHMed()
 {
     QVector <char> temp;
     for (int i = 0; i < egsDVHMeds->count(); i++)
-	if (egsDVHMeds->selectedItems().contains(egsDVHMeds->item(i)))
-	{
-	    if (i < 10)
-		temp << char(i+49);
-	    else
-		temp << char(i+55);
-	}
+		if (egsDVHMeds->selectedItems().contains(egsDVHMeds->item(i)))
+		{
+			if (i < 9)
+				temp << char(i+49);
+			else
+				temp << char(i+56);
+		}
     
     QString path = QFileDialog::getSaveFileName (0, tr("Save File "), 0,
 						 tr("Grace Plot ") +
 						 tr("(*.xvgr *.agr)"));
     if (path == "")
-	return;
+		return;
     
     if (!path.endsWith(tr(".agr")) && !path.endsWith(tr(".xvgr")))
-	path += tr(".agr");
+		path += tr(".agr");
     
     QFile *file;
     QTextStream *input;
@@ -1809,15 +1809,15 @@ void Interface::plotDVHMed()
     int dNum = dvhDose->text().count(',')+1,
 	vNum = dvhVol->text().count(',')+1;
     if (dvhDose->text().toDouble() <= 0 && dvhDose->text().count(',') == 0)
-	dNum = 0;
+		dNum = 0;
     if (dvhVol->text().toDouble() <= 0 && dvhVol->text().count(',') == 0)
-	vNum = 0;
+		vNum = 0;
     QVector <double> oDx, oVx;
     QVector <double> Dx, Vx;
     for (int i = 0; i < dNum; i++)
-	oDx += dvhDose->text().section(',', i, i).toDouble();
+		oDx += dvhDose->text().section(',', i, i).toDouble();
     for (int i = 0; i < vNum; i++)
-	oVx += dvhVol->text().section(',', i, i).toDouble();
+		oVx += dvhVol->text().section(',', i, i).toDouble();
     extra << "File             |"
 	  << "                 |"
 	  << "Minimum Dose     |"
@@ -1836,82 +1836,65 @@ void Interface::plotDVHMed()
     
     if (file->open(QIODevice::WriteOnly | QIODevice::Text))
     {
-	input = new QTextStream (file);
-        QString name = path.section("/",path.count("/"),path.count("/"));
-	name = name.left(name.size() - (path.endsWith(tr(".agr"))?4:5));
-        *input << "@g0 type xy " << "\n";
-	*input << "@    title \"" << name << "\"" << "\n";
-	*input << "@    subtitle \"\"" << "\n";
-	*input << "@    legend on" << "\n";
-	*input << "@    legend box linestyle 0" << "\n";
-	*input << "@    legend x1 0.6" << "\n";
-	*input << "@    legend y1 0.75" << "\n";
-	*input << "@    view xmin 0.250000" << "\n";
-	*input << "@    xaxis  label \"Dose (Gy)\"" << "\n";
-	*input << "@    timestamp on" << "\n";
-	*input << "@    yaxis  label \"Volume (%)\"" << "\n";
+		input = new QTextStream (file);
+		QString name = path.section("/",path.count("/"),path.count("/"));
+		name = name.left(name.size() - (path.endsWith(tr(".agr"))?4:5));
+		*input << "@g0 type xy " << "\n";
+		*input << "@    title \"" << name << "\"" << "\n";
+		*input << "@    subtitle \"\"" << "\n";
+		*input << "@    legend on" << "\n";
+		*input << "@    legend box linestyle 0" << "\n";
+		*input << "@    legend x1 0.6" << "\n";
+		*input << "@    legend y1 0.75" << "\n";
+		*input << "@    view xmin 0.250000" << "\n";
+		*input << "@    xaxis  label \"Dose (Gy)\"" << "\n";
+		*input << "@    timestamp on" << "\n";
+		*input << "@    yaxis  label \"Volume (%)\"" << "\n";
 
-	int n = 0;
-	
-	for (int i = 0; i < data->size(); i++)
-	    if (doseList->selectedItems().contains(doseList->item(i)))
-	    {
-		if (n)
-		    *input << "&\n";
+		int n = 0;
 		
-		*input << "@    s" << QString::number(n) << " on" << "\n";
-		*input << "@    legend string  " << QString::number(n) << " \""
-		       << (*data)[i]->getTitle()  << "\"" << "\n";
-		*input << "@TYPE xy" << "\n";
-		*input << "@    s" << QString::number(n)
-		       << " errorbar length 0.000000" << "\n";
-		*input << "@    s" << QString::number(n)
-		       << " symbol color " << QString::number(n+1) << "\n";
-		if (dvhExtra->isChecked())
-		{
-		    extra[0] += (*data)[i]->getTitle().
-			                    leftJustified(29,' ',TRUE) + " |";
-		    extra[1] += "Value          Error          |";
-		    Dx = oDx; Vx = oVx;
-		    *input << (*data)[i]->plot(0, 0, 0, 0, 0, 0, egsphant,
-					       &temp, &min, &eMin, &max, &eMax,
-					       &avg, &eAvg, &err, &maxErr,
-					       &totVol, &nVox, &Dx, &Vx);
-		    extra[2] += QString::number(min).leftJustified(14) + " " +
-			        QString::number(eMin).leftJustified(14) + " |";
-		    extra[3] += QString::number(max).leftJustified(14) + " " +
-			        QString::number(eMax).leftJustified(14) + " |";
-		    extra[4] += QString::number(avg).leftJustified(14) + " " +
-			        QString::number(eAvg).leftJustified(14) + " |";
-		    extra[5] += QString::number(maxErr).leftJustified(14) + " "
-			+ "               |";
-		    extra[6] += QString::number(err).leftJustified(14) + " "
-			+ "               |";
-		    extra[7] += QString::number(totVol).leftJustified(14) + " "
-			+ "               |";
-		    extra[8] += QString::number(nVox).leftJustified(14) + " "
-			+ "               |";
-		    int count = 9;
-		    for (int j = 0; j < dNum; j++)
-			extra[count++] +=
-			    QString::number(Dx[j]).leftJustified(19) +
-			    "           |";
-		    for (int j = 0; j < vNum; j++)
-			extra[count++] +=
-			    QString::number(Vx[j]).leftJustified(19) +
-			    "           |";
-		}
-		else
-		    *input << (*data)[i]->plot(0, 0, 0, 0, 0, 0, egsphant,
-					       &temp, &min, &eMin, &max, &eMax,
-					       &avg, &eAvg, &err, &maxErr,
-					       &totVol, &nVox, &Dx, &Vx);
+		for (int i = 0; i < data->size(); i++)
+			if (doseList->selectedItems().contains(doseList->item(i)))
+			{
+				if (n)
+					*input << "&\n";
+				
+				*input << "@    s" << QString::number(n) << " on" << "\n";
+				*input << "@    legend string  " << QString::number(n) << " \"" << (*data)[i]->getTitle()  << "\"" << "\n";
+				*input << "@TYPE xy" << "\n";
+				*input << "@    s" << QString::number(n) << " errorbar length 0.000000" << "\n";
+				*input << "@    s" << QString::number(n) << " symbol color " << QString::number(n+1) << "\n";
+				if (dvhExtra->isChecked())
+				{
+					extra[0] += (*data)[i]->getTitle().leftJustified(29,' ',TRUE) + " |";
+					extra[1] += "Value          Error          |";
+					Dx = oDx; Vx = oVx;
+					*input << (*data)[i]->plot(0, 0, 0, 0, 0, 0, egsphant, &temp, &min, &eMin, &max, &eMax, &avg, &eAvg, &err, &maxErr,
+												&totVol, &nVox, &Dx, &Vx);
+					extra[2] += QString::number(min).leftJustified(14) + " " + QString::number(eMin).leftJustified(14) + " |";
+					extra[3] += QString::number(max).leftJustified(14) + " " + QString::number(eMax).leftJustified(14) + " |";
+					extra[4] += QString::number(avg).leftJustified(14) + " " + QString::number(eAvg).leftJustified(14) + " |";
+					extra[5] += QString::number(maxErr).leftJustified(14) + " " + "               |";
+					extra[6] += QString::number(err).leftJustified(14) + " " + "               |";
+					extra[7] += QString::number(totVol).leftJustified(14) + " " + "               |";
+					extra[8] += QString::number(nVox).leftJustified(14) + " " + "               |";
+					int count = 9;
+					for (int j = 0; j < dNum; j++)
+					extra[count++] += QString::number(Dx[j]).leftJustified(19) + "           |";
+					for (int j = 0; j < vNum; j++)
+					extra[count++] += QString::number(Vx[j]).leftJustified(19) + "           |";
+				}
+				else
+					*input << (*data)[i]->plot(0, 0, 0, 0, 0, 0, egsphant,
+								   &temp, &min, &eMin, &max, &eMax,
+								   &avg, &eAvg, &err, &maxErr,
+								   &totVol, &nVox, &Dx, &Vx);
+				
+				n++;
+			}
 		
-		n++;
-	    }
-	
-	*input << "\n";
-	delete input;
+		*input << "\n";
+		delete input;
     }
     delete file;
     
@@ -2593,13 +2576,13 @@ void Interface::statHMed(Dose* comp)
 {
     QVector <char> tempM;
     for (int i = 0; i < statEgsMeds->count(); i++)
-	if (statEgsMeds->selectedItems().contains(statEgsMeds->item(i)))
-	{
-	    if (i < 10)
-		tempM << char(i+49);
-	    else
-		tempM << char(i+55);
-	}
+		if (statEgsMeds->selectedItems().contains(statEgsMeds->item(i)))
+		{
+			if (i < 9)
+				tempM << char(i+49);
+			else
+				tempM << char(i+56);
+		}
     
     QString path = QFileDialog::getSaveFileName (0, tr("Save File "), 0,
 						 tr("Grace Plot ") +

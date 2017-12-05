@@ -251,11 +251,11 @@ void EGSPhant::loadbEGSPhantFile (QString path)
 	for (int k = 0; k < nz; k++)
 	{
 	    for (int j = 0; j < ny; j++)
-		for (int i = 0; i < nx; i++)
-		{
-		    input >> num;
-		    m[i][j][k] = num;
-		}
+			for (int i = 0; i < nx; i++)
+			{
+				input >> num;
+				m[i][j][k] = num;
+			}
 	    emit progressMade(increment); // Update progress bar    
 	}
 
@@ -328,11 +328,11 @@ void EGSPhant::loadbEGSPhantFilePlus (QString path)
 	for (int k = 0; k < nz; k++)
 	{
 	    for (int j = 0; j < ny; j++)
-		for (int i = 0; i < nx; i++)
-		{
-		    input >> num;
-		    m[i][j][k] = num;
-		}
+			for (int i = 0; i < nx; i++)
+			{
+				input >> num;
+				m[i][j][k] = num;
+			}
 	    emit progressMade(increment/100.0*50.0); // Update progress bar    
 	}
 
@@ -341,12 +341,12 @@ void EGSPhant::loadbEGSPhantFilePlus (QString path)
 	for (int k = 0; k < nz; k++)
 	{
 	    for (int j = 0; j < ny; j++)
-		for (int i = 0; i < nx; i++)
-		{
-		    input >> d[i][j][k];
-		    if (d[i][j][k] > maxDensity)
-			maxDensity = d[i][j][k];
-		}
+			for (int i = 0; i < nx; i++)
+			{
+				input >> d[i][j][k];
+				if (d[i][j][k] > maxDensity)
+					maxDensity = d[i][j][k];
+			}
 	    emit progressMade(increment/100.0*50.0); // Update progress bar
 	}
 
@@ -361,35 +361,35 @@ char EGSPhant::getMedia (double px, double py, double pz)
 
     // Find the index of the boundary that is less than px, py and pz
     for (int i = 0; i < nx; i++)
-	if (px <= x[i+1])
-	{
-	    ix = i;
-	    break;
-	}
+		if (px <= x[i+1])
+		{
+			ix = i;
+			break;
+		}
     if (px < x[0])
-	ix = -1;
+		ix = -1;
 
     for (int i = 0; i < ny; i++)
-	if (py <= y[i+1])
-	{
-	    iy = i;
-	    break;
-	}
+		if (py <= y[i+1])
+		{
+			iy = i;
+			break;
+		}
     if (py < y[0])
-	iy = -1;
+		iy = -1;
 
     for (int i = 0; i < nz; i++)
-	if (pz <= z[i+1])
-	{
-	    iz = i;
-	    break;
-	}
+		if (pz <= z[i+1])
+		{
+			iz = i;
+			break;
+		}
     if (pz < z[0])
-	iz = -1;
+		iz = -1;
 
     // This is to insure that no area outside the vectors is accessed
     if (ix < nx && ix >= 0 && iy < ny && iy >= 0 && iz < nz && iz >= 0)
-	return m[ix][iy][iz];
+		return m[ix][iy][iz];
     
     return 0; // We are not within our bounds
 }
@@ -402,35 +402,35 @@ double EGSPhant::getDensity (double px, double py, double pz)
 
     // Find the index of the boundary that is less than px, py and pz
     for (int i = 0; i < nx; i++)
-	if (px <= x[i+1])
-	{
-	    ix = i;
-	    break;
-	}
+		if (px <= x[i+1])
+		{
+			ix = i;
+			break;
+		}
     if (px < x[0])
-	ix = -1;
+		ix = -1;
 
     for (int i = 0; i < ny; i++)
-	if (py <= y[i+1])
-	{
-	    iy = i;
-	    break;
-	}
+		if (py <= y[i+1])
+		{
+			iy = i;
+			break;
+		}
     if (py < y[0])
-	iy = -1;
+		iy = -1;
 
     for (int i = 0; i < nz; i++)
-	if (pz <= z[i+1])
-	{
-	    iz = i;
-	    break;
-	}
+		if (pz <= z[i+1])
+		{
+			iz = i;
+			break;
+		}
     if (pz < z[0])
-	iz = -1;
+		iz = -1;
 
     // This is to insure that no area outside the vectors is accessed
     if (ix < nx && ix >= 0 && iy < ny && iy >= 0 && iz < nz && iz >= 0)
-	return d[ix][iy][iz];
+		return d[ix][iy][iz];
     
     return 0; // We are not within our bounds
 }
