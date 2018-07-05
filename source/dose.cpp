@@ -823,20 +823,30 @@ int Dose::compareDimensions(Dose* other)
 	return 1;    
 }
 
-void Dose::divideDose(Dose* other)
+int Dose::divideDose(Dose* other)
 {    
+	long int count = 0;
 	for (int k = 0; k < z; k++)
-	for (int j = 0; j < y; j++)
-	for (int i = 0; i < x; i++) // Divide appropriatly
-	val[i][j][k] = val[i][j][k]/other->val[i][j][k];
+		for (int j = 0; j < y; j++)
+			for (int i = 0; i < x; i++) // Divide appropriatly
+				if (other->val[i][j][k] != 0)
+					val[i][j][k] = val[i][j][k]/other->val[i][j][k];
+				else
+				{
+					val[i][j][k] = 0.0;
+					count++;
+				}
 	
 	for (int k = 0; k < z; k++)
-	for (int j = 0; j < y; j++)
-	for (int i = 0; i < x; i++) // Recalculate error
-	err[i][j][k] = sqrt(pow(err[i][j][k], 2) +
-	pow(other->err[i][j][k], 2));
+		for (int j = 0; j < y; j++)
+			for (int i = 0; i < x; i++) // Recalculate error
+				if (other->val[i][j][k] != 0)
+					err[i][j][k] = sqrt(pow(err[i][j][k], 2) + pow(other->err[i][j][k], 2));
+				else
+					err[i][j][k] = 1.0;
 	// If v = v1/v2 then
 	//    e = sqrt(e1^2 + e2^2) [where e is fractional error]
+	return count;
 }
 
 int Dose::getIndex(QString axis, double val)

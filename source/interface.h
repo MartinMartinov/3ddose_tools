@@ -15,6 +15,8 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
+#define TRUE 1
+#define FALSE 0
 #include "egsphant.h"
 #include "dose.h"
 #include "previewer.h"

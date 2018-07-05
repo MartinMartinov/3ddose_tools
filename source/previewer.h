@@ -1,6 +1,8 @@
 #ifndef PREVIEWER_H
 #define PREVIEWER_H
 
+#define TRUE 1
+#define FALSE 0
 #include "dose.h"
 #include "egsphant.h"
 

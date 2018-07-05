@@ -15,7 +15,7 @@
 #ifndef EGSPHANT_H
 #define EGSPHANT_H
 
-#include <QtGui>
+#include <QtWidgets>
 #include <iostream>
 #include <math.h>
 

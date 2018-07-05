@@ -87,7 +87,7 @@ public:
     void subtractDoseWithError(Dose* other);
 
     // Divide this by other
-    void divideDose(Dose* other);
+    int divideDose(Dose* other); // Returns the number of voxels divided by zero
 
     // Translate the origin by dx, dy and dz
     int translate(double dx, double dy, double dz);

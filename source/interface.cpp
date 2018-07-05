@@ -1030,14 +1030,19 @@ void Interface::divide ()
 		return;
 	    }
     
+	long int count = 0;
     for (int i = 0; i < data->size(); i++)
-	if (doseList->selectedItems().contains(doseList->item(i)))
-	    (*data)[i]->divideDose(temp);
+		if (doseList->selectedItems().contains(doseList->item(i)))
+			count = (*data)[i]->divideDose(temp);
 
     delete temp;
     
     refresh();
-    done.setText("Dividing by " + choice + " complete.");
+	if (count)
+		done.setText("Dividing by " + choice + " complete.  " + count +
+					 " voxels set to zero after division by zero.");
+	else
+		done.setText("Dividing by " + choice + " complete.");
     done.exec();
 }
 
