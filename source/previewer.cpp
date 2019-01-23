@@ -724,12 +724,12 @@ void Previewer::updateProgress(double n)
 void Previewer::mouseGeom (int width, int height) 
 {
     QString temp = "";
-    double min, max, res;
+    double min, res;
     QString axis = dimBox->currentText();
     res = resEdit->text().toInt();
-    max = dimaf->getText().toDouble(); min = dimai->getText().toDouble();
+    min = dimai->getText().toDouble();
     double a = width/res + min;
-    max = dimbf->getText().toDouble(); min = dimbi->getText().toDouble();
+    min = dimbi->getText().toDouble();
     double b = min + height/res;
     double c;
 

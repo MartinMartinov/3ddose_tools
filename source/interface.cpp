@@ -1138,10 +1138,10 @@ void Interface::plotAxis()
 {
     // Check input
     bool d = FALSE, e = FALSE, f = FALSE, g = FALSE;
-    double h; h = plota->getText().toDouble(&d);
-    double u; u = plotb->getText().toDouble(&e);
-    double j; j = plotci->getText().toDouble(&f);
-    double k; k = plotcf->getText().toDouble(&g);
+    double h = plota->getText().toDouble(&d);
+    double u = plotb->getText().toDouble(&e);
+    double j = plotci->getText().toDouble(&f);
+    double k = plotcf->getText().toDouble(&g);
     QString axis = plotBox->currentText().toUpper().left(1);
     
     if (!d || !e || !f || !g)
@@ -1177,10 +1177,10 @@ void Interface::plotAxis()
 						 tr("Grace Plot ") +
 						 tr("(*.xvgr *.agr)"));
     if (path == "")
-	return;
+		return;
     
     if (!path.endsWith(tr(".agr")) && !path.endsWith(tr(".xvgr")))
-	path += tr(".agr");
+		path += tr(".agr");
     
     QFile *file;
     QTextStream *input;
@@ -1189,9 +1189,9 @@ void Interface::plotAxis()
     if (file->open(QIODevice::WriteOnly | QIODevice::Text))
     {
 		input = new QTextStream (file);
-			QString name = path.section("/",path.count("/"),path.count("/"));
+		QString name = path.section("/",path.count("/"),path.count("/"));
 		name = name.left(name.size() - (path.endsWith(tr(".agr"))?4:5));
-			*input << "@g0 type xy " << "\n";
+		*input << "@g0 type xy " << "\n";
 		*input << "@    title \"" << name << "\"" << "\n";
 		*input << "@    subtitle \"\"" << "\n";
 		*input << "@    legend on" << "\n";
@@ -1218,11 +1218,7 @@ void Interface::plotAxis()
 					   << " errorbar length 0.000000" << "\n";
 				*input << "@    s" << QString::number(n)
 					   << " symbol color " << QString::number(n+1) << "\n";
-				*input << (*data)[i]->plot(axis,
-							   plota->getText().toDouble(),
-							   plotb->getText().toDouble(),
-							   plotci->getText().toDouble(),
-							   plotcf->getText().toDouble());
+				*input << (*data)[i]->plot(axis, h, u, j, k);
 				n++;
 			}
 	
@@ -2981,6 +2977,7 @@ void Interface::updateProgress(double n)
 
     // We redraw the bar
     progress->update();
+	QApplication::processEvents();
 
     // And if our remainder makes a whole number, remove it
     *remainder -= floor(*remainder);
@@ -3032,10 +3029,11 @@ void Interface::createLayout ()
     //logo->setFont(QFont ("Serif", 36, QFont::Bold, false));
     //logo->setAlignment(Qt::AlignCenter);
     
+	
     tri = new QCheckBox ("Interpolation");
     tri->setToolTip(tr("When this option is checked, dose at points and\n") +
 		    tr("scale to point will use trilinear interpolation\n") +
-		    tr("to determine dose at a point.\n"));
+		    tr("to determine dose at a point."));
     tri->setChecked(TRUE);
     doseList = new QListWidget ();
     doseList->setSelectionMode(QAbstractItemView::ExtendedSelection);

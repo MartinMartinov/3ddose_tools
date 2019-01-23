@@ -25,7 +25,7 @@
 /*******************************************************************************
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Main Window Class~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 *******************************************************************************/
-// Decleration of the Main Window class, its variables and its methods
+// Declaration of the Main Window class, its variables and its methods
 class Interface : public QWidget
 {
 private:
