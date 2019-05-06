@@ -260,6 +260,8 @@ double Dose::triInterpol (double xp, double yp, double zp, double *val,
 }
 */
 
+
+// Precalculate volumes to make this faster
 double Dose::triInterpol (double xp, double yp, double zp, double *val,
 double *err)
 {
@@ -2015,7 +2017,7 @@ int Dose::interp (int x1, int x2, double y1, double y2, double y0)
 	return int(x1+(y0-y1)*(x2-x1)/(y2-y1));
 }
 
-QString Dose::getTitle ()
+const QString Dose::getTitle ()
 {
 	return title;
 }
@@ -2038,9 +2040,9 @@ LineInput::LineInput(QWidget *parent, QString lab, QString val)
 	// Style settings
 	QString style;
 	style  = "QLineEdit";
-	style += "{";
-	style += "background-color: rgb(250, 250, 255)";
-	style += "}";
+	//style += "{";
+	//style += "background-color: rgb(250, 250, 255)";
+	//style += "}";
 	setStyleSheet (style);
 	
 	layout = new QVBoxLayout ();

@@ -332,21 +332,21 @@ void Interface::removeDose ()
     
     // Remove all selected distributions
     for (int i = 0; i < data->size(); i++)
-	if (doseList->selectedItems().contains(doseList->item(i)))
-	{
-	    del[i] = TRUE;
-	    if (flag)
-		done.setText(done.text() + ", " + doseList->item(i)->text());
-	    else
-	    {
-		done.setText(done.text() + doseList->item(i)->text());
-		flag = TRUE;
-	    }
-	}
+		if (doseList->selectedItems().contains(doseList->item(i)))
+		{
+			del[i] = TRUE;
+			if (flag)
+				done.setText(done.text() + ", " + doseList->item(i)->text());
+			else
+			{
+				done.setText(done.text() + doseList->item(i)->text());
+				flag = TRUE;
+			}
+		}
     
-    for (int i = data->size(); i >= 0; i--)
-	if (del[i])
-	    data->remove(i);
+    for (int i = data->size()-1; i >= 0; i--)
+		if (del[i])
+			data->remove(i);
 
     // Then clear the table and reload it
     doseList->clear();
@@ -1819,19 +1819,19 @@ void Interface::plotDVHMed()
 		oDx += dvhDose->text().section(',', i, i).toDouble();
     for (int i = 0; i < vNum; i++)
 		oVx += dvhVol->text().section(',', i, i).toDouble();
-    extra << "File             |"
-	  << "                 |"
-	  << "Minimum Dose     |"
-	  << "Maximum Dose     |"
-	  << "Average Dose     |"
-	  << "Maximum Error    |"
-	  << "Average Error    |"
-	  << "Total Volume     |"
-	  << "Number of Voxels |";
+	extra << "File             |"
+		  << "                 |"
+		  << "Minimum Dose     |"
+		  << "Maximum Dose     |"
+		  << "Average Dose     |"
+		  << "Maximum Error    |"
+		  << "Average Error    |"
+		  << "Total Volume     |"
+		  << "Number of Voxels |";
     for (int i = 0; i < dNum; i++)
-	extra << QString("D") + QString::number(oDx[i]).leftJustified(16) + "|";
+		extra << QString("D") + QString::number(oDx[i]).leftJustified(16) + "|";
     for (int i = 0; i < vNum; i++)
-	extra << QString("V") + QString::number(oVx[i]).leftJustified(16) + "|";
+		extra << QString("V") + QString::number(oVx[i]).leftJustified(16) + "|";
 	
     file = new QFile (path);
     
@@ -1901,31 +1901,31 @@ void Interface::plotDVHMed()
     
     if (dvhExtra->isChecked())
     {
-	QString path2 = QFileDialog::getSaveFileName(0, tr("Save File"), 0,
-					tr("Additional Statistics (*.txt)"));
-	if (path2 == 0)
-	    return;
-	
-	if (!path2.endsWith(".txt"))
-	    path2 += ".txt";
-	
-	QFile file2 (path2);
-	
-	if (file2.open(QIODevice::WriteOnly | QIODevice::Text))
-	{
-	    QTextStream input2 (&file2);
-	    
-	    input2 << "Additional Statistics for DVH over the following media:";
-	    for (int i = 0; i < egsDVHMeds->count(); i++)
-		if (egsDVHMeds->selectedItems().contains(egsDVHMeds->item(i)))
-		    input2 << " " << egsDVHMeds->item(i)->text();
-	    input2 << "\n\n";
+		QString path2 = QFileDialog::getSaveFileName(0, tr("Save File"), 0,
+						tr("Additional Statistics (*.txt)"));
+		if (path2 == 0)
+			return;
+		
+		if (!path2.endsWith(".txt"))
+			path2 += ".txt";
+		
+		QFile file2 (path2);
+		
+		if (file2.open(QIODevice::WriteOnly | QIODevice::Text))
+		{
+			QTextStream input2 (&file2);
+			
+			input2 << "Additional Statistics for DVH over the following media:";
+			for (int i = 0; i < egsDVHMeds->count(); i++)
+			if (egsDVHMeds->selectedItems().contains(egsDVHMeds->item(i)))
+				input2 << " " << egsDVHMeds->item(i)->text();
+			input2 << "\n\n";
 
-	    for (int i = 0; i < extra.size(); i++)
-		input2 << extra[i] << "\n";
-	    
-	    file2.close();
-	}
+			for (int i = 0; i < extra.size(); i++)
+			input2 << extra[i] << "\n";
+			
+			file2.close();
+		}
     }
 
     Grace(path);
@@ -2993,38 +2993,39 @@ void Interface::createLayout ()
     
     QString style;
     style  = "QWidget {";
-    style += "background-color: rgb(240, 240, 240);";
-    style += "}";
-    style += "QLineEdit";
-    style += "{";
-    style += "background-color: rgb(250, 250, 255)";
-    style += "}"; 
-    style += "QCheckBox::indicator:unchecked  {";
-    style += "width: 9px;";
-    style += "height: 9px;";
-    style += "background-color: rgb(250, 250, 255);";
-    style += "border-top: 1px solid black;";
-    style += "border-left: 1px solid black;";
-    style += "border-right: 1px solid rgb(160, 160, 160);";
-    style += "border-bottom: 1px solid rgb(160, 160, 160);";
-    style += "}";
-    style += "QCheckBox::indicator:checked  {";
-    style += "width: 11px;";
-    style += "height: 11px;";
-    style += "}";   
-    style += "QListWidget";
-    style += "{";
-    style += "background-color: rgb(250, 250, 255);";
-    style += "}";
-    style += "QToolTip {";
-    style += "background-color: rgb(240, 240, 240);";
-    style += "color: rgb(0, 0, 0);";
-    style += "}";
+    //style += "background-color: rgb(240, 240, 240);";
+    //style += "}";
+    //style += "QLineEdit";
+    //style += "{";
+    //style += "background-color: rgb(250, 250, 255)";
+    //style += "}"; 
+    //style += "QCheckBox::indicator:unchecked  {";
+    //style += "width: 9px;";
+    //style += "height: 9px;";
+    //style += "background-color: rgb(250, 250, 255);";
+    //style += "border-top: 1px solid black;";
+    //style += "border-left: 1px solid black;";
+    //style += "border-right: 1px solid rgb(160, 160, 160);";
+    //style += "border-bottom: 1px solid rgb(160, 160, 160);";
+    //style += "}";
+    //style += "QCheckBox::indicator:checked  {";
+    //style += "width: 11px;";
+    //style += "height: 11px;";
+    //style += "}";   
+    //style += "QListWidget";
+    //style += "{";
+    //style += "background-color: rgb(250, 250, 255);";
+    //style += "}";
+    //style += "QToolTip {";
+    //style += "background-color: rgb(240, 240, 240);";
+    //style += "color: rgb(0, 0, 0);";
+    //style += "}";
 
     // Setup the Banner
 	logo = new QLabel ();
 	QPixmap ddt_logo ((const char **) ddt_logo_xpm);
 	logo->setPixmap(ddt_logo);
+	logo->setAlignment(Qt::AlignCenter);
     //logo = new QLabel ("3ddose\n  tools");
     //logo->setFont(QFont ("Serif", 36, QFont::Bold, false));
     //logo->setAlignment(Qt::AlignCenter);
@@ -3401,21 +3402,21 @@ void Interface::createLayout ()
     progWin->setLayout(progLayout);
     progWin->resize(300, 0);
     progress->setRange(0, Dose::MAX_PROGRESS);
-    style = "";
-    style += "QWidget {background-color: rgb(240, 240, 240)}";
-    style += "QProgressBar {";
-    style += "border: 1px solid black;";
-    style += "text-align: top;";
-    style += "padding: 1px;";
-    style += "background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,";
-    style += "stop: 0.4 rgb(240, 240, 240), stop: 1.0 rgb(200, 200, 200),";
-    style += "stop: 0.4 rgb(240, 240, 240), stop: 1.0 rgb(200, 200, 200));";
-    style += "}";
-    style += "QProgressBar::chunk {";
-    style += "background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,";
-    style += "stop: 0.4 rgb(176, 224, 230), stop: 1.0 rgb(65, 105, 225),";
-    style += "stop: 0.4 rgb(176, 224, 230), stop: 1.0 rgb(65, 105, 225));";
-    style += "}";
+    //style = "";
+    //style += "QWidget {background-color: rgb(240, 240, 240)}";
+    //style += "QProgressBar {";
+    //style += "border: 1px solid black;";
+    //style += "text-align: top;";
+    //style += "padding: 1px;";
+    //style += "background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,";
+    //style += "stop: 0.4 rgb(240, 240, 240), stop: 1.0 rgb(200, 200, 200),";
+    //style += "stop: 0.4 rgb(240, 240, 240), stop: 1.0 rgb(200, 200, 200));";
+    //style += "}";
+    //style += "QProgressBar::chunk {";
+    //style += "background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,";
+    //style += "stop: 0.4 rgb(176, 224, 230), stop: 1.0 rgb(65, 105, 225),";
+    //style += "stop: 0.4 rgb(176, 224, 230), stop: 1.0 rgb(65, 105, 225));";
+    //style += "}";
     progWin->setFont (QFont ("Serif", 12, QFont::Normal, false));
     progWin->setStyleSheet(style);
 }
@@ -3597,7 +3598,8 @@ void Interface::refresh ()
 void Interface::showPreview()
 {
     this->setDisabled(TRUE);
-    previewer->setEnabled(TRUE);
     previewer->window->show();
+	QApplication::processEvents();
+    previewer->setEnabled(TRUE);
     previewer->updateDoses();
 }
