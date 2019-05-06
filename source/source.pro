@@ -4,7 +4,7 @@
 
 QT += widgets
 TEMPLATE = app
-TARGET = source
+TARGET = 3ddose_tools
 INCLUDEPATH += .
 
 # The following define makes your compiler warn you if you use any
