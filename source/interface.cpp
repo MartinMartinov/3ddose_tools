@@ -2044,6 +2044,9 @@ void Interface::statH(Dose* comp)
 			   << "\"Square of (Difference / Uncertainty) \""
 			   << "\n";
 		    break;
+		case 8: // Local difference
+		    *input << "@    xaxis  label \"Difference / Local Dose (voxel by voxel)\"" << "\n";
+		    break;
 		default:
 		    break;
 		}
@@ -2108,6 +2111,9 @@ void Interface::statH(Dose* comp)
 			temp.square();
 			temp.getMinMaxAvg(&min, &max, &avg);		    
 			break;
+		    case 8: // Local Difference
+			temp.localDose(&orig);
+			temp.getMinMaxAvg(&min, &max, &avg);
 		    default:
 			break;
 		    }
@@ -2177,6 +2183,9 @@ void Interface::statH(Dose* comp)
 		case 7: // Square of Difference / Uncertainty
 		    temp.subtractDoseWithError(&orig);
 		    temp.square();		    
+		    break;
+		case 8: // Local difference
+		    temp.localDose(&orig);
 		    break;
 		default:
 		    break;
@@ -2353,6 +2362,9 @@ void Interface::statHReg(Dose* comp)
 			   << "\"Square of (Difference / Uncertainty) \""
 			   << "\n";
 		    break;
+		case 8: // Local difference
+		    *input << "@    xaxis  label \"Difference / Local Dose (voxel by voxel)\"" << "\n";
+		    break;
 		default:
 		    break;
 		}
@@ -2416,6 +2428,10 @@ void Interface::statHReg(Dose* comp)
 		    temp.subtractDoseWithError(&orig);
 		    temp.square();
 		    temp.getMinMaxAvg(&min, &max, &avg);		    
+		    break;
+		case 8: // Local difference
+		    temp.localDose(&orig);
+		    temp.getMinMaxAvg(&min, &max, &avg);
 		    break;
 		default:
 		    break;
@@ -2481,6 +2497,9 @@ void Interface::statHReg(Dose* comp)
 		    temp.subtractDoseWithError(&orig);
 		    temp.square();		    
 		    break;
+		case 8: // Local Difference
+		    temp.localDose(&orig);
+		     break;
 		default:
 		    break;
 		}
@@ -2663,6 +2682,9 @@ void Interface::statHMed(Dose* comp)
 			   << "\"Square of (Difference / Uncertainty) \""
 			   << "\n";
 		    break;
+		case 8: // Local difference
+		    *input << "@    xaxis  label \"Difference / Local Dose (voxel by voxel)\"" << "\n";
+		    break;
 		default:
 		    break;
 		}
@@ -2726,6 +2748,10 @@ void Interface::statHMed(Dose* comp)
 		    temp.subtractDoseWithError(&orig);
 		    temp.square();
 		    temp.getMinMaxAvg(&min, &max, &avg);		    
+		    break;
+		case 8: // Local difference
+		    temp.localDose(&orig);
+            temp.getMinMaxAvg(&min, &max, &avg);
 		    break;
 		default:
 		    break;
@@ -2791,6 +2817,9 @@ void Interface::statHMed(Dose* comp)
 		    temp.subtractDoseWithError(&orig);
 		    temp.square();		    
 		    break;
+		case 8: // Local difference
+		    temp.localDose(&orig);
+                    break;
 		default:
 		    break;
 		}
@@ -2991,8 +3020,8 @@ void Interface::createLayout ()
     previewer = new Previewer (this, data);
     previewer->setDisabled(TRUE);
     
-    QString style;
-    style  = "QWidget {";
+    //QString style;
+    //style  = "QWidget {";
     //style += "background-color: rgb(240, 240, 240);";
     //style += "}";
     //style += "QLineEdit";
@@ -3155,7 +3184,8 @@ void Interface::createLayout ()
 		  << "Square of Difference"
 		  << "Square of Difference / Average"
 		  << "Square of Difference / Max"
-		  << "Square of Difference / Uncertainty";
+		  << "Square of Difference / Uncertainty"
+		  << "Difference / (local) Dose";
     statBin = new LineInput (0, "Bins", "100");
     statMin = new LineInput (0, "Min", "-50");
     statMax = new LineInput (0, "Max", "50");
@@ -3389,7 +3419,7 @@ void Interface::createLayout ()
     mainLayout->setColumnStretch(2, 1);
     mainLayout->setColumnStretch(3, 1);
     
-    setStyleSheet(style);
+    //setStyleSheet(style);
     setLayout(mainLayout);
     setWindowTitle(tr("3ddose tools v. 1.0"));
 
@@ -3418,7 +3448,7 @@ void Interface::createLayout ()
     //style += "stop: 0.4 rgb(176, 224, 230), stop: 1.0 rgb(65, 105, 225));";
     //style += "}";
     progWin->setFont (QFont ("Serif", 12, QFont::Normal, false));
-    progWin->setStyleSheet(style);
+    //progWin->setStyleSheet(style);
 }
 
 void Interface::connectLayout ()

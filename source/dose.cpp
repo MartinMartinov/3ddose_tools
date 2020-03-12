@@ -851,6 +851,45 @@ int Dose::divideDose(Dose* other)
 	return count;
 }
 
+void Dose::localDose(Dose* other)
+{
+        QVector <double> temp; // This holds the original value of this Dose for the
+        // error formula
+        int n = 0;
+        temp.resize(z*y*x);
+
+        for (int k = 0; k < z; k++)
+                for (int j = 0; j < y; j++)
+                        for (int i = 0; i < x; i++)
+                        {
+                                // save temp
+                                temp[n++] = val[i][j][k];
+                                // subtract distributions
+				val[i][j][k] = val[i][j][k] - other->val[i][j][k];
+				// if denominator is nonzero, divide and multiply by 100
+				// else set to zero
+                                if (other->val[i][j][k] != 0)
+                                        val[i][j][k] = 100*val[i][j][k]/other->val[i][j][k];
+                                else
+                                {
+                                        val[i][j][k] = 0.0;
+                                }
+                        }
+        n = 0;
+
+        for (int k = 0; k < z; k++)
+                for (int j = 0; j < y; j++)
+                        for (int i = 0; i < x; i++)
+                        {
+                                // for the formula v = (v1 - v2)/v2
+                                // sigma = sqrt((e1*v1)^2 + (e2*v2)^2) [where e is fractional
+                                // error]
+                                err[i][j][k] = sqrt(pow(err[i][j][k] * temp[n++],2) + pow(other->err[i][j][k] * other->val[i][j][k], 2));
+                                // so then e = sigma/v
+                                err[i][j][k] = err[i][j][k] / val[i][j][k];
+                        }
+}
+
 int Dose::getIndex(QString axis, double val)
 {
 	// This algorithm checks to see if val is within the outer bounds of axis'

@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     
     QApplication::setFont(QFont("Liberation Sans", 12, QFont::Normal, false));
     
-    app.setStyle("CleanLooks"); // Give the app stylish interface
+    //app.setStyle("CleanLooks"); // Give the app stylish interface
     
     Interface w;
     w.show();

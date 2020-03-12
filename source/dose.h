@@ -89,6 +89,9 @@ public:
     // Divide this by other
     int divideDose(Dose* other); // Returns the number of voxels divided by zero
 
+    // Calculate dose difference normalized by local voxel dose
+    void localDose(Dose* other);
+
     // Translate the origin by dx, dy and dz
     int translate(double dx, double dy, double dz);
 
@@ -159,10 +162,10 @@ public:
     void bubble(DVHpoint *data, int n); // This is here for testing, do not use
     
     // Return the this title
-    QString getTitle ();
+    const QString getTitle();
 
     // Set this title
-    void setTitle (QString name);
+    void setTitle(QString name);
 
     // Get isodose points
     void getContour (QVector <QVector <QLineF> > *con, QVector <double> doses,
