@@ -3199,7 +3199,7 @@ void Interface::createLayout() {
 
     //setStyleSheet(style);
     setLayout(mainLayout);
-    setWindowTitle(tr("3ddose tools v. 1.0"));
+    setWindowTitle(tr("3ddose tools v. 1.1"));
 
     // Progress Bar
     remainder = new double (0.0);
