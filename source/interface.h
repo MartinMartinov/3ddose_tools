@@ -8,7 +8,7 @@
 *                                                                      *
 *    Please report all problems to:                                    *
 *    Martin Martinov martinov@physics.carleton.ca                      *
-*    Rowan Thomson rthomson@physics.carleton.ca                        * 
+*    Rowan Thomson rthomson@physics.carleton.ca                        *
 ************************************************************************
 ***********************************************************************/
 
@@ -26,14 +26,13 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Main Window Class~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 *******************************************************************************/
 // Declaration of the Main Window class, its variables and its methods
-class Interface : public QWidget
-{
+class Interface : public QWidget {
 private:
-    Q_OBJECT // This line is necessary to create custom SLOTs, ie, functions   
-             // that define what happens when you click on buttons
+    Q_OBJECT // This line is necessary to create custom SLOTs, ie, functions
+    // that define what happens when you click on buttons
 public:
-    Interface ();
-    ~Interface ();
+    Interface();
+    ~Interface();
 
 public slots:
     // All the function calls when something is pressed
@@ -49,34 +48,34 @@ public slots:
     void divide(); // Divide distributions by another distribution
     void subtract(); // Subtract distributions by another distribution
     void add(); // Subtract distributions by another distribution
-    void plot(); // Create an xmgrace plot
+    void plot(); // Create an plot
     void plotAxis(); // Of a uninterpolated line along an axis
     void plotLine(); // Of a interpolated line defined abitrarily
     void plotDVH(); // Of an overall DVH
     void plotDVHReg(); // Of the DVH of a specific volume
     void plotDVHMed(); // Of the DVH on certain media in an egsphant file
-    void stat(); // Create an xmgrace plot
-    void statH(Dose* comp); // Of an overall comparison histogram
-    void statHReg(Dose* comp); // Of the comparison histogram of a specific
-                               // volume
-    void statHMed(Dose* comp); // Of the comparison histogram on certain media
-                               // in an egsphant file
+    void stat(); // Create an plot
+    void statH(Dose *comp); // Of an overall comparison histogram
+    void statHReg(Dose *comp); // Of the comparison histogram of a specific
+    // volume
+    void statHMed(Dose *comp); // Of the comparison histogram on certain media
+    // in an egsphant file
     void doseAtPoints(); // Output a text file with the dose at several points
-                         // defined in an input text file
+    // defined in an input text file
     void rebinBounds(); // Change 3ddose file boundaries based on those defined
-                        // in an input text file
-    void Grace(QString path); // Call xmgrace to display the plot at path
-    void doneGrace(); // Close xmgrace
+    // in an input text file
+    //void Grace(QString path); // Call xmgrace to display the plot at path
+    //void doneGrace(); // Close xmgrace
     void selectEGSFile(); // Select egsphant file for plotDVHMed()
     void selectStatEGSFile(); // Select egsphant file for comparison
     void showPreview(); // Load previewer and disable back end
-    
+
 public:
     Previewer *previewer; // The preview window
-    QVector <Dose*> *data; // The vector that stores all the dose data
+    QVector <Dose *> *data; // The vector that stores all the dose data
     QErrorMessage badInput; // The error message that pops when input is bad
-    QMessageBox done; // The message that pops up to say a task is complete 
-    
+    QMessageBox done; // The message that pops up to say a task is complete
+
 // PROGRESS BAR~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     double *remainder;
     QWidget *progWin;
@@ -84,20 +83,20 @@ public:
     QProgressBar *progress;
 
 public slots:
-    void updateProgress (double n);
+    void updateProgress(double n);
 
-public:    
+public:
 // LAYOUT~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     QGridLayout *mainLayout;
     QPushButton *close;
     QPushButton *preview;
 
     QLabel *logo;
-    
+
     QGroupBox *doseFrame;
     QCheckBox *tri;
     QListWidget *doseList;
-    QGridLayout *doseLayout;    
+    QGridLayout *doseLayout;
 
     QGroupBox *ioFrame;
     QPushButton *iButton;
@@ -194,10 +193,10 @@ public:
     QPushButton *pointButton;
     QPushButton *rebinButton;
     QGridLayout *newLayout;
-        
+
     // Declaring tab layout methods
-    void createLayout ();
-    void connectLayout ();
+    void createLayout();
+    void connectLayout();
 };
 
 #endif

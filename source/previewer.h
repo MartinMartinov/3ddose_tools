@@ -13,19 +13,18 @@
 // keep track of the position of the mouse, and to know whether it is over the
 // widget or not, so as to be able to give the coordinates of the seed
 
-class HoverLabel : public QLabel // It inherits QLabel publicly
-{
+class HoverLabel : public QLabel { // It inherits QLabel publicly
 private:
-    Q_OBJECT // This line is necessary to create custom SLOTs, ie, functions   
-             // that define what happens when you click on buttons
+    Q_OBJECT // This line is necessary to create custom SLOTs, ie, functions
+    // that define what happens when you click on buttons
 public:
     void mouseMoveEvent(QMouseEvent *event); // Overwrite mouseMoveEvent to send
-                                             // a signal to MainWindow
+    // a signal to MainWindow
     void wheelEvent(QWheelEvent *event); // Overwrite wheelEvent to send
-                                         // a signal to MainWindow
+    // a signal to MainWindow
 signals:
     void mouseMoved(int width, int height); // This is the signal to be
-                                            // sent in mouseMoveEvent
+    // sent in mouseMoveEvent
     void mouseWheelUp();   // Detect the wheel being scrolled over the image
     void mouseWheelDown(); // to shift depth appropriately
 };
@@ -33,27 +32,26 @@ signals:
 /******************************************************************************
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Examine Window Class~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 *******************************************************************************/
-class  Previewer: public QWidget
-{
+class  Previewer: public QWidget {
 private:
-    Q_OBJECT // This line is necessary to create custom SLOTs, ie, functions   
-             // that define what happens when you click on buttons
+    Q_OBJECT // This line is necessary to create custom SLOTs, ie, functions
+    // that define what happens when you click on buttons
 public:
     // The constructor
-    Previewer (QWidget *parent, QVector <Dose*> *d);
+    Previewer(QWidget *parent, QVector <Dose *> *d);
 
     // The destructor
-    ~Previewer ();
+    ~Previewer();
 
     // Data
     QWidget *mom;
-    QVector <Dose*> *data;
+    QVector <Dose *> *data;
     EGSPhant phant;
     QVector <QVector <QLineF> > solid;
     QVector <QVector <QLineF> > dashed;
     QVector <QVector <QLineF> > dotted;
     QPixmap phantPicture;
-    
+
     // Universal
     QErrorMessage *errors;
     QWidget *window;
@@ -73,7 +71,7 @@ public:
     QGridLayout *typeLayout;
     QRadioButton *typeMed;
     QRadioButton *typeDen;
-    
+
     // Image Dimensions
     QGroupBox *dimFrame;
     QStringList *dimItems;
@@ -81,9 +79,9 @@ public:
     LineInput *dimai, *dimbi, *dimaf, *dimbf;
     QLabel *depth;
     QSlider *dimc;
-	QToolButton *dimcLeft, *dimcRight;
+    QToolButton *dimcLeft, *dimcRight;
     QGridLayout *dimLayout;
-    
+
     // Image Resolution
     QLineEdit *resEdit;
     QHBoxLayout *resLayout;
@@ -92,19 +90,19 @@ public:
     // Contour Selector
     QFrame *contourFrame;
     QGridLayout *contourLayout;
-    QVector <QPushButton*> *colors;
-    QVector <QLineEdit*> *doses;
+    QVector <QPushButton *> *colors;
+    QVector <QLineEdit *> *doses;
 
     // Dose Selector
     QFrame *doseFrame;
     QGridLayout *doseLayout;
-    QVector <QComboBox*> *distribs;
-    QVector <QLabel*> *lines;
-    
+    QVector <QComboBox *> *distribs;
+    QVector <QLabel *> *lines;
+
 public slots:
     // Methods
     void mouseGeom(int width, int height); // This updates pose when a
-                                           // mouse signal is received
+    // mouse signal is received
     void changeDim(); // Change labeling on dimensions
     void changeDepthLeft();
     void changeDepthRight();
@@ -121,9 +119,9 @@ public slots:
 
 public:
 // LAYOUT FUNCTIONS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    void createLayout ();
-    void connectLayout ();
-    
+    void createLayout();
+    void connectLayout();
+
 // PROGRESS BAR~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     double *remainder;
     QWidget *progWin;
@@ -131,7 +129,7 @@ public:
     QProgressBar *progress;
 
 public slots:
-    void updateProgress (double n);
+    void updateProgress(double n);
 };
 
 #endif

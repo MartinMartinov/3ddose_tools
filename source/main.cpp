@@ -8,7 +8,7 @@
 *                                                                      *
 *    Please report all problems to:                                    *
 *    Martin Martinov martinov@physics.carleton.ca                      *
-*    Rowan Thomson rthomson@physics.carleton.ca                        * 
+*    Rowan Thomson rthomson@physics.carleton.ca                        *
 ************************************************************************
 ***********************************************************************/
 
@@ -16,16 +16,14 @@
 #include "dose.h"
 #include <QApplication>
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
-    
-    QApplication::setFont(QFont("Liberation Sans", 12, QFont::Normal, false));
-    
+
+    //QApplication::setFont(QFont("Liberation Sans", 12, QFont::Normal, false));
     //app.setStyle("CleanLooks"); // Give the app stylish interface
-    
+
     Interface w;
     w.show();
-	
+
     return app.exec();
 }
