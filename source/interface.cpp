@@ -463,18 +463,24 @@ void Interface::doseAtPoints() {
     }
     delete file;
 
-    // Boundary Check
+    // Boundary Check		
     for (int j = 0; j < points.size(); j++)
         for (int i = 0; i < data->size(); i++)
-            if (doseList->selectedItems().contains(doseList->item(i)))
+            if (doseList->selectedItems().contains(doseList->item(i))) {
+				QString bounds = QString("(Xi to Xf, Yi to Yf, Zi to Zf) ") + tr("bounds are:\n(")
+								+QString::number((*data)[i]->cx[0])+" to "+QString::number((*data)[i]->cx[(*data)[i]->x])+ QString(", ")
+								+QString::number((*data)[i]->cy[0])+" to "+QString::number((*data)[i]->cy[(*data)[i]->y])+ QString(", ")
+								+QString::number((*data)[i]->cz[0])+" to "+QString::number((*data)[i]->cz[(*data)[i]->z])+ QString(").");
                 if ((*data)[i]->getIndex("X",(*(points[j]))[0]) < 0 ||
-                        (*data)[i]->getIndex("Y",(*(points[j]))[1]) < 0 ||
-                        (*data)[i]->getIndex("Z",(*(points[j]))[2]) < 0) {
-                    badInput.showMessage(tr("Some points in file are ") +
+					(*data)[i]->getIndex("Y",(*(points[j]))[1]) < 0 ||
+					(*data)[i]->getIndex("Z",(*(points[j]))[2]) < 0) {
+                    badInput.setText(tr("Some points in file are ") +
                                          tr("outside of selected ") +
-                                         tr("distributions."));
+                                         tr("distributions.  ") + bounds.toLatin1());
+					badInput.exec();
                     return;
                 }
+			}
 
     path = QFileDialog::getSaveFileName(0, tr("Save File"), 0,
                                         tr("Dose at Points (*.txt)"));
@@ -615,50 +621,60 @@ void Interface::rebinBounds() {
     }
     delete file;
 
-
+	
     for (int i = 0; i < data->size(); i++)
         if (doseList->selectedItems().contains(doseList->item(i))) {
+			QString bounds2 = QString("(Xi to Xf, Yi to Yf, Zi to Zf) ") + tr("bounds are:\n(")
+							 +QString::number((*data)[i]->cx[0])+" to "+QString::number((*data)[i]->cx[(*data)[i]->x])+ QString(", ")
+							 +QString::number((*data)[i]->cy[0])+" to "+QString::number((*data)[i]->cy[(*data)[i]->y])+ QString(", ")
+							 +QString::number((*data)[i]->cz[0])+" to "+QString::number((*data)[i]->cz[(*data)[i]->z])+ QString(").");
             for (int j = 0; j < bounds[0].size(); j++) {
                 if ((*data)[i]->getIndex("X",bounds[0][j]) < 0) {
-                    badInput.showMessage(tr("Some boundaries in file are ") +
+                    badInput.setText(tr("Some boundaries in file are ") +
                                          tr("outside of selected ") +
-                                         tr("distributions."));
+                                         tr("distributions.  ") + bounds2.toLatin1());
+					badInput.exec();
                     return;
                 }
                 else if (j+1 < bounds[0].size()) {
                     if (bounds[0][j] > bounds[0][j+1]) {
-                        badInput.showMessage(tr("Some boundaries in the file ")+
+                        badInput.setText(tr("Some boundaries in the file ")+
                                              tr("are not in ascending order."));
+					badInput.exec();
                         return;
                     }
                 }
             }
             for (int j = 0; j < bounds[1].size(); j++) {
                 if ((*data)[i]->getIndex("Y",bounds[1][j]) < 0) {
-                    badInput.showMessage(tr("Some boundaries in file are ") +
+                    badInput.setText(tr("Some boundaries in file are ") +
                                          tr("outside of selected ") +
-                                         tr("distributions."));
+                                         tr("distributions.  ") + bounds2.toLatin1());
+					badInput.exec();
                     return;
                 }
                 else if (j+1 < bounds[1].size()) {
                     if (bounds[1][j] > bounds[1][j+1]) {
-                        badInput.showMessage(tr("Some boundaries in file are ")+
+                        badInput.setText(tr("Some boundaries in file are ")+
                                              tr("not in ascending order."));
+					badInput.exec();
                         return;
                     }
                 }
             }
             for (int j = 0; j < bounds[2].size(); j++) {
                 if ((*data)[i]->getIndex("Z",bounds[2][j]) < 0) {
-                    badInput.showMessage(tr("Some boundaries in file are ") +
+                    badInput.setText(tr("Some boundaries in file are ") +
                                          tr("outside of selected ") +
-                                         tr("distributions."));
+                                         tr("distributions.  ") + bounds2.toLatin1());
+					badInput.exec();
                     return;
                 }
                 else if (j+1 < bounds[2].size()) {
                     if (bounds[2][j] > bounds[2][j+1]) {
-                        badInput.showMessage(tr("Some boundaries in file are ")+
+                        badInput.setText(tr("Some boundaries in file are ")+
                                              tr("not in ascending order."));
+						badInput.exec();
                         return;
                     }
                 }
@@ -819,8 +835,9 @@ void Interface::translate() {
                                       transz->getText().toDouble());
             }
             else {
-                badInput.showMessage(tr("The transformation vector input must be 3 ") +
-                                     tr("real numbers."));
+                badInput.setText(tr("The transformation vector input must be 3 ") +
+                                 tr("real numbers."));
+				badInput.exec();
             }
         }
 
@@ -837,10 +854,12 @@ void Interface::strip() {
             if ((*data)[i]->x > 2 && (*data)[i]->y > 2 && (*data)[i]->z > 2) {
                 (*data)[i]->strip();
             }
-            else
-                badInput.showMessage(doseList->item(i)->text() +
+            else {
+                badInput.setText(doseList->item(i)->text() +
                                      tr(" was not stripped, as it had less ") +
                                      tr("than 3 voxels in a dimension."));
+				badInput.exec();
+			}
         }
     }
 
@@ -860,8 +879,9 @@ void Interface::normalize() {
         a = FALSE;
         factor->getText().toDouble(&a);
         if (!a) { // If the scaling factor is not a real number
-            badInput.showMessage(tr("The scaling factor must be a ") +
+            badInput.setText(tr("The scaling factor must be a ") +
                                  tr("real number."));
+			badInput.exec();
             flag = TRUE;
         }
         break;
@@ -872,16 +892,21 @@ void Interface::normalize() {
                 a = b = c = FALSE;
                 x = normx->getText().toDouble(&a);
                 y = normy->getText().toDouble(&b);
-                z = normz->getText().toDouble(&c);
+                z = normz->getText().toDouble(&c);	
+				QString bounds = QString("(Xi to Xf, Yi to Yf, Zi to Zf) ") + tr("bounds are:\n(")
+								+QString::number((*data)[i]->cx[0])+" to "+QString::number((*data)[i]->cx[(*data)[i]->x])+ QString(", ")
+								+QString::number((*data)[i]->cy[0])+" to "+QString::number((*data)[i]->cy[(*data)[i]->y])+ QString(", ")
+								+QString::number((*data)[i]->cz[0])+" to "+QString::number((*data)[i]->cz[(*data)[i]->z])+ QString(").");
                 // If any of the parameters are not real numbers within
                 // the defined dimensions
                 if (!a || !b || !c ||
                         (*data)[i]->getIndex("X", x) < 0 ||
                         (*data)[i]->getIndex("Y", y) < 0 ||
                         (*data)[i]->getIndex("Z", z) < 0) {
-                    badInput.showMessage(tr("The point at which to normalize") +
+                    badInput.setText(tr("The point at which to normalize") +
                                          tr(" must be a real point within ") +
-                                         tr("all selected files."));
+                                         tr("all selected files.  ") + bounds.toLatin1());
+					badInput.exec();
                     flag = TRUE;
                     i = data->size();
                 }
@@ -892,8 +917,8 @@ void Interface::normalize() {
         for (int i = 0; i < data->size(); i++)
             if (doseList->selectedItems().contains(doseList->item(i))) {
                 if ((*data)[i]->x < 0 || (*data)[i]->y < 0 || (*data)[i]->z < 0) {
-                    badInput.showMessage(tr("The distributions must be non-") +
-                                         tr("zero."));
+                    badInput.setText(tr("The distributions must be non-zero."));
+					badInput.exec();
                     flag = TRUE;
                     i = data->size();
                 }
@@ -912,6 +937,11 @@ void Interface::normalize() {
                 zf = normzf->getText().toDouble(&f);
                 // If any of the parameters are not real numbers within
                 // the defined dimensions
+				
+				QString bounds = QString("(Xi to Xf, Yi to Yf, Zi to Zf) ") + tr("bounds are:\n(")
+								+QString::number((*data)[i]->cx[0])+" to "+QString::number((*data)[i]->cx[(*data)[i]->x])+ QString(", ")
+								+QString::number((*data)[i]->cy[0])+" to "+QString::number((*data)[i]->cy[(*data)[i]->y])+ QString(", ")
+								+QString::number((*data)[i]->cz[0])+" to "+QString::number((*data)[i]->cz[(*data)[i]->z])+ QString(").");
                 if (!a || !b || !c || !d || !e || !f ||
                         (*data)[i]->getIndex("X", xi) < 0 ||
                         (*data)[i]->getIndex("Y", yi) < 0 ||
@@ -919,9 +949,10 @@ void Interface::normalize() {
                         (*data)[i]->getIndex("X", xf) < 0 ||
                         (*data)[i]->getIndex("Y", yf) < 0 ||
                         (*data)[i]->getIndex("Z", zf) < 0) {
-                    badInput.showMessage(tr("The volume within which to ") +
+                    badInput.setText(tr("The volume within which to ") +
                                          tr("normalize must be a real point ") +
-                                         tr("within all selected files."));
+                                         tr("within all selected files.  ") + bounds.toLatin1());
+					badInput.exec();
                     flag = TRUE;
                     i = data->size();
                 }
@@ -1006,9 +1037,10 @@ void Interface::divide() {
     for (int i = 0; i < data->size(); i++)
         if (doseList->selectedItems().contains(doseList->item(i)))
             if (!(*data)[i]->compareDimensions(temp)) {
-                badInput.showMessage(tr("The dimensions of the phantoms ") +
+                badInput.setText(tr("The dimensions of the phantoms ") +
                                      tr("being divided and the one dividing ") +
                                      tr("do not match."));
+				badInput.exec();
                 return;
             }
 
@@ -1056,9 +1088,10 @@ void Interface::subtract() {
     for (int i = 0; i < data->size(); i++)
         if (doseList->selectedItems().contains(doseList->item(i)))
             if (!(*data)[i]->compareDimensions(temp)) {
-                badInput.showMessage(tr("The dimensions of the phantoms ") +
+                badInput.setText(tr("The dimensions of the phantoms ") +
                                      tr("being subtracted and the one ") +
                                      tr("subtracting do not match."));
+				badInput.exec();
                 return;
             }
 
@@ -1100,9 +1133,10 @@ void Interface::add() {
     for (int i = 0; i < data->size(); i++)
         if (doseList->selectedItems().contains(doseList->item(i)))
             if (!(*data)[i]->compareDimensions(temp)) {
-                badInput.showMessage(tr("The dimensions of the phantoms ") +
+                badInput.setText(tr("The dimensions of the phantoms ") +
                                      tr("being subtracted and the one ") +
                                      tr("subtracting do not match."));
+				badInput.exec();
                 return;
             }
 
@@ -1128,12 +1162,14 @@ void Interface::plotAxis() {
     QString axis = plotBox->currentText().toUpper().left(1);
 
     if (!d || !e || !f || !g) {
-        badInput.showMessage(tr("The coordinates of the data must be real ") +
-                             tr("numbers."));
+        badInput.setText(tr("The coordinates of the data must be real ") +
+                        tr("numbers."));
+		badInput.exec();
         return;
     }
     if (j >= k) {
-        badInput.showMessage(tr("The min and max don't make sense."));
+        badInput.setText(tr("The min is larger than or equal to the max."));
+		badInput.exec();
         return;
     }
 
@@ -1147,7 +1183,7 @@ void Interface::plotAxis() {
         (*data)[i]->getIndex(axis, j) < 0 ||
         (*data)[i]->getIndex(axis, k) < 0)
         {
-        badInput.showMessage(tr("The parameters of the plot are ") +
+        badInput.setText(tr("The parameters of the plot are ") +
                      tr("outside of the area defined within ") +
                      tr("the dose files."));
         return;
@@ -1284,28 +1320,36 @@ void Interface::plotLine() {
     QString axis = plotBox->currentText().toUpper().left(1);
 
     if (!d || !e || !f || !g || !h || !i) {
-        badInput.showMessage(tr("The coordinates of the line must be real ") +
+        badInput.setText(tr("The coordinates of the line must be real ") +
                              tr("numbers."));
+		badInput.exec();
         return;
     }
     else if (res <= 0) {
-        badInput.showMessage(tr("The resolution must be a positive integer."));
+        badInput.setText(tr("The resolution must be a positive integer."));
+		badInput.exec();
         return;
     }
 
     for (int i = 0; i < data->size(); i++)
-        if (doseList->selectedItems().contains(doseList->item(i)))
+        if (doseList->selectedItems().contains(doseList->item(i))) {
+			QString bounds = QString("(Xi to Xf, Yi to Yf, Zi to Zf) ") + tr("bounds are:\n(")
+							+QString::number((*data)[i]->cx[0])+" to "+QString::number((*data)[i]->cx[(*data)[i]->x-1])+ QString(", ")
+							+QString::number((*data)[i]->cy[0])+" to "+QString::number((*data)[i]->cy[(*data)[i]->y-1])+ QString(", ")
+							+QString::number((*data)[i]->cz[0])+" to "+QString::number((*data)[i]->cz[(*data)[i]->z-1])+ QString(").");
             if ((*data)[i]->getIndex("X", xi) < 0 ||
                     (*data)[i]->getIndex("X", xf) < 0 ||
                     (*data)[i]->getIndex("Y", yi) < 0 ||
                     (*data)[i]->getIndex("Y", yf) < 0 ||
                     (*data)[i]->getIndex("Z", zi) < 0 ||
                     (*data)[i]->getIndex("Z", zf) < 0) {
-                badInput.showMessage(tr("The parameters of the plot are ") +
+                badInput.setText(tr("The parameters of the plot are ") +
                                      tr("outside of the area defined within ") +
-                                     tr("the distribution."));
+                                     tr("the distribution.  ") + bounds.toLatin1());
+				badInput.exec();
                 return;
             }
+		}
 
     QString path = QFileDialog::getSaveFileName(0, tr("Save File "), 0,
                    tr("Comma Separated Values ") +
@@ -1450,19 +1494,19 @@ void Interface::plotDVH() {
                                                &min, &eMin, &max, &eMax, &avg,
                                                &eAvg, &err, &maxErr, &totVol,
                                                &nVox, &Dx, &Vx);
-                    extra[2] += QString::number(min).leftJustified(14) + " " +
+                    extra[2] += QString::number(min).leftJustified(14) + QString(" ") +
                                 QString::number(eMin).leftJustified(14) + " |";
-                    extra[3] += QString::number(max).leftJustified(14) + " " +
+                    extra[3] += QString::number(max).leftJustified(14) + QString(" ") +
                                 QString::number(eMax).leftJustified(14) + " |";
-                    extra[4] += QString::number(avg).leftJustified(14) + " " +
+                    extra[4] += QString::number(avg).leftJustified(14) + QString(" ") +
                                 QString::number(eAvg).leftJustified(14) + " |";
-                    extra[5] += QString::number(maxErr).leftJustified(14) + " "
+                    extra[5] += QString::number(maxErr).leftJustified(14) + QString(" ")
                                 + "               |";
-                    extra[6] += QString::number(err).leftJustified(14) + " "
+                    extra[6] += QString::number(err).leftJustified(14) + QString(" ")
                                 + "               |";
-                    extra[7] += QString::number(totVol).leftJustified(14) + " "
+                    extra[7] += QString::number(totVol).leftJustified(14) + QString(" ")
                                 + "               |";
-                    extra[8] += QString::number(nVox).leftJustified(14) + " "
+                    extra[8] += QString::number(nVox).leftJustified(14) + QString(" ")
                                 + "               |";
                     int count = 9;
                     for (int j = 0; j < dNum; j++)
@@ -1529,7 +1573,11 @@ void Interface::plotDVHReg() {
             xf = dvhxf->getText().toDouble(&d);
             yf = dvhyf->getText().toDouble(&e);
             zf = dvhzf->getText().toDouble(&f);
-
+				
+			QString bounds = QString("(Xi to Xf, Yi to Yf, Zi to Zf) ") + tr("bounds are:\n(")
+							+QString::number((*data)[i]->cx[0])+" to "+QString::number((*data)[i]->cx[(*data)[i]->x])+ QString(", ")
+							+QString::number((*data)[i]->cy[0])+" to "+QString::number((*data)[i]->cy[(*data)[i]->y])+ QString(", ")
+							+QString::number((*data)[i]->cz[0])+" to "+QString::number((*data)[i]->cz[(*data)[i]->z])+ QString(").");
             if (!a || !b || !c || !d || !e || !f ||
                     (*data)[i]->getIndex("X", xi) < 0 ||
                     (*data)[i]->getIndex("Y", yi) < 0 ||
@@ -1537,9 +1585,10 @@ void Interface::plotDVHReg() {
                     (*data)[i]->getIndex("X", xf) < 0 ||
                     (*data)[i]->getIndex("Y", yf) < 0 ||
                     (*data)[i]->getIndex("Z", zf) < 0) {
-                badInput.showMessage(tr("The region within which to create a") +
+                badInput.setText(tr("The region within which to create a") +
                                      tr(" DVH must exist within the selected") +
-                                     tr(" distributions."));
+                                     tr(" distributions.  ") + bounds.toLatin1());
+				badInput.exec();
                 return;
             }
         }
@@ -1622,19 +1671,19 @@ void Interface::plotDVHReg() {
                                                NULL, &min, &eMin, &max, &eMax,
                                                &avg, &eAvg, &err, &maxErr,
                                                &totVol, &nVox, &Dx, &Vx);
-                    extra[2] += QString::number(min).leftJustified(14) + " " +
+                    extra[2] += QString::number(min).leftJustified(14) + QString(" ") +
                                 QString::number(eMin).leftJustified(14) + " |";
-                    extra[3] += QString::number(max).leftJustified(14) + " " +
+                    extra[3] += QString::number(max).leftJustified(14) + QString(" ") +
                                 QString::number(eMax).leftJustified(14) + " |";
-                    extra[4] += QString::number(avg).leftJustified(14) + " " +
+                    extra[4] += QString::number(avg).leftJustified(14) + QString(" ") +
                                 QString::number(eAvg).leftJustified(14) + " |";
-                    extra[5] += QString::number(maxErr).leftJustified(14) + " "
+                    extra[5] += QString::number(maxErr).leftJustified(14) + QString(" ")
                                 + "               |";
-                    extra[6] += QString::number(err).leftJustified(14) + " "
+                    extra[6] += QString::number(err).leftJustified(14) + QString(" ")
                                 + "               |";
-                    extra[7] += QString::number(totVol).leftJustified(14) + " "
+                    extra[7] += QString::number(totVol).leftJustified(14) + QString(" ")
                                 + "               |";
-                    extra[8] += QString::number(nVox).leftJustified(14) + " "
+                    extra[8] += QString::number(nVox).leftJustified(14) + QString(" ")
                                 + "               |";
                     int count = 9;
                     for (int j = 0; j < dNum; j++)
@@ -1770,13 +1819,13 @@ void Interface::plotDVHMed() {
                     Vx = oVx;
                     *input << (*data)[i]->plot(0, 0, 0, 0, 0, 0, egsphant, &temp, &min, &eMin, &max, &eMax, &avg, &eAvg, &err, &maxErr,
                                                &totVol, &nVox, &Dx, &Vx);
-                    extra[2] += QString::number(min).leftJustified(14) + " " + QString::number(eMin).leftJustified(14) + " |";
-                    extra[3] += QString::number(max).leftJustified(14) + " " + QString::number(eMax).leftJustified(14) + " |";
-                    extra[4] += QString::number(avg).leftJustified(14) + " " + QString::number(eAvg).leftJustified(14) + " |";
-                    extra[5] += QString::number(maxErr).leftJustified(14) + " " + "               |";
-                    extra[6] += QString::number(err).leftJustified(14) + " " + "               |";
-                    extra[7] += QString::number(totVol).leftJustified(14) + " " + "               |";
-                    extra[8] += QString::number(nVox).leftJustified(14) + " " + "               |";
+                    extra[2] += QString::number(min).leftJustified(14) + QString(" ") + QString::number(eMin).leftJustified(14) + " |";
+                    extra[3] += QString::number(max).leftJustified(14) + QString(" ") + QString::number(eMax).leftJustified(14) + " |";
+                    extra[4] += QString::number(avg).leftJustified(14) + QString(" ") + QString::number(eAvg).leftJustified(14) + " |";
+                    extra[5] += QString::number(maxErr).leftJustified(14) + QString(" ") + "               |";
+                    extra[6] += QString::number(err).leftJustified(14) + QString(" ") + "               |";
+                    extra[7] += QString::number(totVol).leftJustified(14) + QString(" ") + "               |";
+                    extra[8] += QString::number(nVox).leftJustified(14) + QString(" ") + "               |";
                     int count = 9;
                     for (int j = 0; j < dNum; j++) {
                         extra[count++] += QString::number(Dx[j]).leftJustified(19) + "           |";
@@ -2080,21 +2129,21 @@ void Interface::statH(Dose *comp) {
                     extra[0] += (*data)[i]->getTitle().
                                 leftJustified(29,' ',TRUE) + " |";
                     extra[1] += "Value          Error          |";
-                    extra[2] += QString::number(totVol).leftJustified(14) + " "
+                    extra[2] += QString::number(totVol).leftJustified(14) + QString(" ")
                                 + "               |";
-                    extra[3] += QString::number(nVox).leftJustified(14) + " "
+                    extra[3] += QString::number(nVox).leftJustified(14) + QString(" ")
                                 + "               |";
-                    extra[4] += QString::number(chi).leftJustified(14) + " "
+                    extra[4] += QString::number(chi).leftJustified(14) + QString(" ")
                                 + "               |";
-                    extra[5] += QString::number(rms).leftJustified(14) + " "
+                    extra[5] += QString::number(rms).leftJustified(14) + QString(" ")
                                 + "               |";
                     // Difference / Error
                     if (statOptBox->currentIndex() == 3 ||
                             statOptBox->currentIndex() == 7) {
                         extra[6] += QString::number(area1).leftJustified(14)
-                                    + " " + "               |";
+                                    + QString(" ") + "               |";
                         extra[7] += QString::number(area2).leftJustified(14)
-                                    + " " + "               |";
+                                    + QString(" ") + "               |";
                     }
                 }
                 n++;
@@ -2354,21 +2403,21 @@ void Interface::statHReg(Dose *comp) {
                     extra[0] += (*data)[i]->getTitle().
                                 leftJustified(29,' ',TRUE) + " |";
                     extra[1] += "Value          Error          |";
-                    extra[2] += QString::number(totVol).leftJustified(14) + " "
+                    extra[2] += QString::number(totVol).leftJustified(14) + QString(" ")
                                 + "               |";
-                    extra[3] += QString::number(nVox).leftJustified(14) + " "
+                    extra[3] += QString::number(nVox).leftJustified(14) + QString(" ")
                                 + "               |";
-                    extra[4] += QString::number(chi).leftJustified(14) + " "
+                    extra[4] += QString::number(chi).leftJustified(14) + QString(" ")
                                 + "               |";
-                    extra[5] += QString::number(rms).leftJustified(14) + " "
+                    extra[5] += QString::number(rms).leftJustified(14) + QString(" ")
                                 + "               |";
                     // Difference / Error
                     if (statOptBox->currentIndex() == 3 ||
                             statOptBox->currentIndex() == 7) {
                         extra[6] += QString::number(area1).leftJustified(14)
-                                    + " " + "               |";
+                                    + QString(" ") + "               |";
                         extra[7] += QString::number(area2).leftJustified(14)
-                                    + " " + "               |";
+                                    + QString(" ") + "               |";
                     }
                 }
                 n++;
@@ -2637,21 +2686,21 @@ void Interface::statHMed(Dose *comp) {
                     extra[0] += (*data)[i]->getTitle().
                                 leftJustified(29,' ',TRUE) + " |";
                     extra[1] += "Value          Error          |";
-                    extra[2] += QString::number(totVol).leftJustified(14) + " "
+                    extra[2] += QString::number(totVol).leftJustified(14) + QString(" ")
                                 + "               |";
-                    extra[3] += QString::number(nVox).leftJustified(14) + " "
+                    extra[3] += QString::number(nVox).leftJustified(14) + QString(" ")
                                 + "               |";
-                    extra[4] += QString::number(chi).leftJustified(14) + " "
+                    extra[4] += QString::number(chi).leftJustified(14) + QString(" ")
                                 + "               |";
-                    extra[5] += QString::number(rms).leftJustified(14) + " "
+                    extra[5] += QString::number(rms).leftJustified(14) + QString(" ")
                                 + "               |";
                     // Difference / Error
                     if (statOptBox->currentIndex() == 3 ||
                             statOptBox->currentIndex() == 7) {
                         extra[6] += QString::number(area1).leftJustified(14)
-                                    + " " + "               |";
+                                    + QString(" ") + "               |";
                         extra[7] += QString::number(area2).leftJustified(14)
-                                    + " " + "               |";
+                                    + QString(" ") + "               |";
                     }
                 }
                 n++;
@@ -2700,8 +2749,9 @@ void Interface::stat() {
     }
 
     if (statBin->getText().toInt() <= 0) {
-        badInput.showMessage(tr("The number of bins must be an integer ")+
+        badInput.setText(tr("The number of bins must be an integer ")+
                              tr("greater than zero."));
+		badInput.exec();
         return;
     }
 
@@ -2732,8 +2782,9 @@ void Interface::stat() {
     for (int i = 0; i < data->size(); i++)
         if (doseList->selectedItems().contains(doseList->item(i)))
             if (!(*data)[i]->compareDimensions(temp)) {
-                badInput.showMessage(tr("The dimensions of the distributions ")+
+                badInput.setText(tr("The dimensions of the distributions ")+
                                      tr("being compared do not match."));
+				badInput.exec();
                 return;
             }
 
@@ -3200,6 +3251,7 @@ void Interface::createLayout() {
     //setStyleSheet(style);
     setLayout(mainLayout);
     setWindowTitle(tr("3ddose tools v. 1.1"));
+	badInput.setTextFormat(Qt::PlainText);
 
     // Progress Bar
     remainder = new double (0.0);

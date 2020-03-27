@@ -73,7 +73,7 @@ public slots:
 public:
     Previewer *previewer; // The preview window
     QVector <Dose *> *data; // The vector that stores all the dose data
-    QErrorMessage badInput; // The error message that pops when input is bad
+    QMessageBox badInput; // The error message that pops when input is bad
     QMessageBox done; // The message that pops up to say a task is complete
 
 // PROGRESS BAR~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
