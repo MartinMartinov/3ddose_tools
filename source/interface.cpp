@@ -102,6 +102,7 @@ Interface::~Interface() {
     delete lineLayout;
     delete lineWidget;
     delete aveWidget;
+    delete perWidget;
     delete normStack;
     delete normLayout;
     delete normFrame;
@@ -872,7 +873,7 @@ void Interface::normalize() {
     // Check the appropriate normalization parameters
     bool flag = FALSE;
     bool a, b, c, d, e, f;
-    double x, y, z, xi, yi, zi, xf, yf, zf;
+    double x, y, z, xi, yi, zi, xf, yf, zf, norm;
 
     switch (normBox->currentIndex()+1) {
     case 1:
@@ -959,6 +960,18 @@ void Interface::normalize() {
             }
         break;
 
+    case 5:
+        for (int i = 0; i < data->size(); i++)
+            if (doseList->selectedItems().contains(doseList->item(i))) {
+                if ((*data)[i]->x < 0 || (*data)[i]->y < 0 || (*data)[i]->z < 0) {
+                    badInput.setText(tr("The distributions must be non-zero."));
+					badInput.exec();
+                    flag = TRUE;
+                    i = data->size();
+                }
+            }
+        break;
+		
     default:
         flag = TRUE;
         break;
@@ -1001,6 +1014,11 @@ void Interface::normalize() {
                 (*data)[i]->scaleArea(xi, yi, zi, xf, yf, zf);
                 break;
 
+            case 5:
+                norm = 1.0/(*data)[i]->getMax()*100.0;
+                (*data)[i]->scale(norm);
+                break;
+				
             default:
                 break;
             }
@@ -2926,7 +2944,7 @@ void Interface::createLayout() {
     // Normalization Widget Setup
     normItems = new QStringList();
     *normItems << tr("scale") << tr("to point") << tr("to average")
-               << tr("to max within volume");
+               << tr("to max within volume") << tr("to percent of max");
     normBox = new QComboBox();
     normBox->addItems(*normItems);
     normButton = new QPushButton("Scale");
@@ -2973,10 +2991,14 @@ void Interface::createLayout() {
     aveWidget = new QWidget();
     aveWidget->setToolTip(tr("This mode normalizes the distribution to\n") +
                           tr("the average dose of the distribution."));
+    perWidget = new QWidget();
+    perWidget->setToolTip(tr("This mode normalizes the distribution to\n") +
+                          tr("a percentage of the max dose of the distribution."));
     normStack->addWidget(scaleWidget);
     normStack->addWidget(pointWidget);
     normStack->addWidget(aveWidget);
     normStack->addWidget(lineWidget);
+    normStack->addWidget(perWidget);
     normLayout->addWidget(normButton, 0, 0);
     normLayout->addWidget(normBox, 0, 1);
     normLayout->addLayout(normStack, 1, 0, 1, 2);

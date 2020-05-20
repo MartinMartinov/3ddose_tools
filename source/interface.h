@@ -122,6 +122,7 @@ public:
     QWidget *lineWidget;
     QGridLayout *lineLayout;
     QWidget *aveWidget;
+    QWidget *perWidget;
 
     QGroupBox *transFrame;
     QPushButton *transButton;

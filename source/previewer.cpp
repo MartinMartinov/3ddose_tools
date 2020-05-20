@@ -710,6 +710,7 @@ void Previewer::updateProgress(double n) {
 
     // We redraw the bar
     progress->update();
+    QApplication::processEvents();
 
     // And if our remainder makes a whole number, remove it
     *remainder -= floor(*remainder);
