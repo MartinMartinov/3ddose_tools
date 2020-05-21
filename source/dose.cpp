@@ -276,7 +276,6 @@ double Dose::triInterpol(double xp, double yp, double zp, double *val,
     // Define X
     xi = getIndex("X", xp);
     if (xp < (cx[xi] + cx[xi-1])/2.0) {
-        xi--;
         x0 = (cx[xi] + cx[xi-1])/2.0;
         x1 = (cx[xi] + cx[xi+1])/2.0;
     }
@@ -288,7 +287,6 @@ double Dose::triInterpol(double xp, double yp, double zp, double *val,
     // Define Y
     yi = getIndex("Y", yp);
     if (yp < (cy[yi] + cy[yi-1])/2.0) {
-        yi--;
         y0 = (cy[yi] + cy[yi-1])/2.0;
         y1 = (cy[yi] + cy[yi+1])/2.0;
     }
@@ -300,7 +298,6 @@ double Dose::triInterpol(double xp, double yp, double zp, double *val,
     // Define Z
     zi = getIndex("Z", zp);
     if (zp < (cz[zi] + cz[zi-1])/2.0) {
-        zi--;
         z0 = (cz[zi] + cz[zi-1])/2.0;
         z1 = (cz[zi] + cz[zi+1])/2.0;
     }
