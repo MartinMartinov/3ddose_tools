@@ -459,6 +459,7 @@ void Dose::readBIn(QString path, int n) {
 
     if (file->open(QIODevice::ReadOnly)) {
         input = new QDataStream(file);
+		input->setByteOrder(QDataStream::LittleEndian);
 
         emit progressMade(increment*0.005); // Update progress bar
 
@@ -624,6 +625,7 @@ void Dose::readBOut(QString path, int n) {
 
     if (file->open(QIODevice::WriteOnly)) {
         input = new QDataStream(file);
+		input->setByteOrder(QDataStream::LittleEndian);
 
         emit progressMade(increment*0.005); // Update progress bar
 

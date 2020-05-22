@@ -193,6 +193,8 @@ void EGSPhant::loadbEGSPhantFile(QString path) {
     // Open up the file specified at path
     if (file.open(QIODevice::ReadOnly)) {
         QDataStream input(&file);
+		input.setByteOrder(QDataStream::LittleEndian);
+		
         // read in the number of media
         unsigned char num;
         input >> num;
@@ -269,6 +271,8 @@ void EGSPhant::loadbEGSPhantFilePlus(QString path) {
     // Open up the file specified at path
     if (file.open(QIODevice::ReadOnly)) {
         QDataStream input(&file);
+		input.setByteOrder(QDataStream::LittleEndian);
+		
         // read in the number of media
         unsigned char num;
         input >> num;
