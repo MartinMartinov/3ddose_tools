@@ -3148,21 +3148,17 @@ void Interface::createLayout() {
     dvhExtra = new QCheckBox("Output Additional Data");
     dvhExtra->setToolTip(tr("Output additional information."));
     dvhDoseLab = new QLabel("Dx");
-    dvhDoseLab->setToolTip(tr("All the doses input, delimited with a ',',") +
-                           tr("will output the corresponding volume that\n") +
-                           tr("received x dose."));
+    dvhDoseLab->setToolTip(tr("All the volume fractions (%) input, delimited with a ',', will output\n") +
+                           tr("the minimum dose received by x percent of the volume."));
     dvhDose = new QLineEdit();
-    dvhDose->setToolTip(tr("All the doses input, delimited with a ',',") +
-                        tr("will output the corresponding volume that\n") +
-                        tr("received x dose."));
+    dvhDose->setToolTip(tr("All the volume fractions (%) input, delimited with a ',', will output\n") +
+					    tr("the minimum dose received by x percent of the volume."));
     dvhVolLab = new QLabel("Vx");
-    dvhVolLab->setToolTip(tr("All the volumes input, delimited with a ',',") +
-                          tr("will output the corresponding dose that\n") +
-                          tr("x volume received."));
+    dvhVolLab->setToolTip(tr("All the doses input, delimited with a ',', will output the\n") +
+                          tr("corresponding absolute volume that received at least x dose."));
     dvhVol = new QLineEdit();
-    dvhVol->setToolTip(tr("All the volumes input, delimited with a ',',") +
-                       tr("will output the corresponding dose that\n") +
-                       tr("x volume received."));
+    dvhVol->setToolTip(tr("All the doses input, delimited with a ',', will output the\n") +
+					   tr("corresponding absolute volume that received at least x dose."));
     dvhxi = new LineInput(0, "Initial x", "-1.0");
     dvhyi = new LineInput(0, "Initial y", "-1.0");
     dvhzi = new LineInput(0, "Initial z", "-1.0");
