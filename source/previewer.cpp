@@ -80,6 +80,8 @@ Previewer::~Previewer() {
     delete resFrame;
     delete contourLayout;
     delete contourFrame;
+	delete wash;
+	delete legend;
     delete colors;
     delete doses;
     delete doseLayout;
@@ -172,26 +174,59 @@ void Previewer::createLayout() {
     QString cStyle;
     temp << "None";
 
+    wash = new QCheckBox("colour wash");
+    wash->setToolTip(tr("When this option is checked, a gradient of dose\n") +
+                     tr("represented as a colour wash replaces the isodose\n") +
+                     tr("contours."));
+    legend = new QCheckBox("legend");
+    legend->setToolTip(tr("When this option is checked, a color-dose legend\n") +
+                       tr("is added to the top right of the image."));
     colors = new QVector <QPushButton *>;
     doses = new QVector <QLineEdit *>;
     colors->resize(num);
     doses->resize(num);
     contourLayout = new QGridLayout();
+	int red, green, blue;
     for (int i = 0; i < num; i++) {
+		// Assign colors
+		switch (i) {
+			case (0):
+				red = 0; green = 0; blue = 255;
+				break;
+			case (1):
+				red = 0; green = 255; blue = 255;
+				break;
+			case (2):
+				red = 0; green = 255; blue = 0;
+				break;
+			case (3):
+				red = 255; green = 255; blue = 0;
+				break;
+			case (4):
+				red = 255; green = 0; blue = 0;
+				break;
+			default:
+				red = 255; green = 0; blue = 0;
+				break;
+		}
+			
         (*colors)[i] = new QPushButton();
         cStyle = "QPushButton {background-color: rgb(";
-        cStyle += QString::number(int(255/num*(i+1)));
-        cStyle += ",0,";
-        cStyle += QString::number(int(255/num*(num-i-1)));
+        cStyle += QString::number(red);
+        cStyle += ",";
+        cStyle += QString::number(green);
+		cStyle += ",";
+        cStyle += QString::number(blue);
         cStyle += ")}";
         (*colors)[i]->setStyleSheet(cStyle);
         (*doses)[i] = new QLineEdit(QString::number(int(100/num*(i+1))));
         contourLayout->addWidget((*colors)[i],i,0);
         contourLayout->addWidget((*doses)[i],i,1);
     }
+	contourLayout->addWidget(wash,num,0,1,2);
+	contourLayout->addWidget(legend,num+1,0,1,2);
     contourFrame = new QFrame;
     contourFrame->setLayout(contourLayout);
-
 
     distribs = new QVector <QComboBox *>;
     lines = new QVector <QLabel *>;
@@ -354,6 +389,11 @@ void Previewer::connectLayout() {
             this, SLOT(saveImage()));
     connect(close, SIGNAL(clicked()),
             this, SLOT(closePreview()));
+			
+    connect(wash, SIGNAL(stateChanged(int)),
+            this, SLOT(flipExtraDoses()));
+    connect(wash, SIGNAL(stateChanged(int)),
+            this, SLOT(redraw()));
 }
 
 /*******************************************************************************
@@ -485,7 +525,7 @@ void Previewer::changeColor() {
     cStyle += QString::number(c.blue()) + ")}";
     b->setStyleSheet(cStyle);
 
-    updateWash();
+    redraw();
 }
 
 void Previewer::changeDim() {
@@ -551,30 +591,188 @@ void Previewer::redraw() {
         depth = (phant.z[dimc->value()]+phant.z[dimc->value()+1])/2.0;
     }
 
-    if (typeMed->isChecked())
-        phantPicture = QPixmap::fromImage(
-                           phant.getEGSPhantPicMed(dimBox->currentText(),
-                                   dimbi->getText().toDouble(),
-                                   dimbf->getText().toDouble(),
-                                   dimai->getText().toDouble(),
-                                   dimaf->getText().toDouble(),
-                                   depth,
-                                   resEdit->text().toInt()));
-    else if (typeDen->isChecked())
-        phantPicture = QPixmap::fromImage(
-                           phant.getEGSPhantPicDen(dimBox->currentText(),
-                                   dimbi->getText().toDouble(),
-                                   dimbf->getText().toDouble(),
-                                   dimai->getText().toDouble(),
-                                   dimaf->getText().toDouble(),
-                                   depth,
-                                   resEdit->text().toInt()));
+	if (typeMed->isChecked()) {
+		phantPicture = QPixmap::fromImage(
+						   phant.getEGSPhantPicMed(dimBox->currentText(),
+								   dimbi->getText().toDouble(),
+								   dimbf->getText().toDouble(),
+								   dimai->getText().toDouble(),
+								   dimaf->getText().toDouble(),
+								   depth,
+								   resEdit->text().toInt()));
+	}
+	else if (typeDen->isChecked()) {
+		phantPicture = QPixmap::fromImage(
+						   phant.getEGSPhantPicDen(dimBox->currentText(),
+								   dimbi->getText().toDouble(),
+								   dimbf->getText().toDouble(),
+								   dimai->getText().toDouble(),
+								   dimaf->getText().toDouble(),
+								   depth,
+								   resEdit->text().toInt()));
+	}
+	
+    if ((*distribs)[0]->currentIndex() > 0 ||
+		(*distribs)[1]->currentIndex() > 0 ||
+		(*distribs)[2]->currentIndex() > 0) {
+		if (wash->isChecked()) {
+			updateWash();
+		}
+		else {
+			updateContour();
+		}
+	}
+	else 
+		updateImage();
+}
 
-    updateWash();
+void Previewer::flipExtraDoses() {
+	if (wash->isChecked()) {
+		(*distribs)[1]->setDisabled(true);
+		(*distribs)[2]->setDisabled(true);
+	}
+	else {
+		(*distribs)[1]->setEnabled(true);
+		(*distribs)[2]->setEnabled(true);
+	}
+	
+	redraw();
+}
+
+QColor Previewer::getColor(double d, QVector <double> *t, QVector < QVector <int> > *c) {
+	double w1 = 0, w2 = 0;
+	for (int i = 1; i < t->size(); i++) {
+		if ((*t)[i-1] <= d && d < (*t)[i]) {
+			w1 = d-(*t)[i-1];
+			w2 = (*t)[i]-d;
+			w1 /= (*t)[i]-(*t)[i-1];
+			w2 /= (*t)[i]-(*t)[i-1];
+			
+			return QColor((*c)[i][0]*w1+(*c)[i-1][0]*w2,
+						  (*c)[i][1]*w1+(*c)[i-1][1]*w2,
+						  (*c)[i][2]*w1+(*c)[i-1][2]*w2);
+		}
+	}
+	if (t->last() <= d) 
+		return QColor(c->last()[0], c->last()[1], c->last()[2]);
+	return QColor(0,0,0);
 }
 
 void Previewer::updateWash() {
-    updateContour();
+    // Skip
+    if ((*distribs)[0]->currentIndex() < 1)
+		return;
+	
+    *picture = phantPicture;
+
+    double depth = 0;
+	int axis = 0;
+    if (!dimBox->currentText().compare("x axis")) {
+        depth = (phant.x[dimc->value()]+phant.x[dimc->value()+1])/2.0;
+		axis = 0;
+    }
+    else if (!dimBox->currentText().compare("y axis")) {
+        depth = (phant.y[dimc->value()]+phant.y[dimc->value()+1])/2.0;
+		axis = 1;
+    }
+    else if (!dimBox->currentText().compare("z axis")) {
+        depth = (phant.z[dimc->value()]+phant.z[dimc->value()+1])/2.0;
+		axis = 2;
+    }
+	
+    // Set up the wash painter
+    QPainter painter;
+    QPen pen;
+	QColor shade;
+    pen.setWidth(1);
+    painter.begin(picture);
+	
+    QVector <double> conDose;
+    for (int i = 0; i < colors->size(); i++) {
+        conDose.append((*doses)[i]->text().toDouble());
+    }
+	
+	QVector < QVector <int> > conColor; // Five arrays of red, green and blue that correspond to conDose
+    for (int i = 0; i < colors->size(); i++) {
+		conColor.resize(conColor.size()+1);
+		shade = (*colors)[i]->palette().color(QPalette::Button);
+		conColor.last().append(shade.red());
+		conColor.last().append(shade.green());
+		conColor.last().append(shade.blue());
+    }
+	
+	// Get coordinates
+    double ai = dimai->getText().toDouble();
+	double aInc = (dimaf->getText().toDouble()-ai)/image->width()*2;
+    double a = ai-(aInc*0.75); // to start at the center of a cluster of 4 pixels
+    double bi = dimbi->getText().toDouble();
+	double bInc = (dimbf->getText().toDouble()-bi)/image->height()*2;
+    double b = bi-(bInc*0.75); // to start at the center of a cluster of 4 pixels
+    double c = depth;
+	double dose = 0;
+	int doseInd = (*distribs)[0]->currentIndex()-1;
+	
+    // Create the proper label for the proper axis
+    if (axis == 0) {
+		for (int i = 0; i < image->width(); i+=2) {
+			a += aInc;
+			b = bi - (bInc*0.75);
+			for (int j = 0; j < image->height(); j+=2) {
+				b += bInc;
+				dose = (*data)[doseInd]->getDose(c, a, b);
+				
+				if (dose >= conDose[0]) {
+					shade = getColor(dose, &conDose, &conColor);
+					pen.setColor(shade);
+					painter.setPen(pen);
+					
+					painter.drawPoint(i+1,j);
+					painter.drawPoint(i,j+1);
+				}
+			}
+		}
+    }
+    else if (axis == 1) {
+		for (int i = 0; i < image->width(); i+=2) {
+			a += aInc;
+			b = bi - (bInc*0.75);
+			for (int j = 0; j < image->height(); j+=2) {
+				b += bInc;
+				dose = (*data)[doseInd]->getDose(a, c, b);
+				
+				if (dose >= conDose[0]) {
+					shade = getColor(dose, &conDose, &conColor);
+					pen.setColor(shade);
+					painter.setPen(pen);
+					
+					painter.drawPoint(i+1,j);
+					painter.drawPoint(i,j+1);
+				}
+			}
+		}
+    }
+    else if (axis == 2) {
+		for (int i = 0; i < image->width(); i+=2) {
+			a += aInc;
+			b = bi - (bInc*0.75);
+			for (int j = 0; j < image->height(); j+=2) {
+				b += bInc;
+				dose = (*data)[doseInd]->getDose(a, b, c);
+				
+				if (dose >= conDose[0]) {
+					shade = getColor(dose, &conDose, &conColor);
+					pen.setColor(shade);
+					painter.setPen(pen);
+					
+					painter.drawPoint(i+1,j);
+					painter.drawPoint(i,j+1);
+				}
+			}
+		}
+    }
+
+    painter.end();
+    updateImage();
 }
 
 void Previewer::updateContour() {
@@ -663,7 +861,34 @@ void Previewer::updateContour() {
 }
 
 void Previewer::updateImage() {
-    image->setPixmap(*picture);
+	// Flip y after all processing, not the most efficient but still faster than the actual colouring
+	*picture = picture->transformed(QTransform().scale(1,-1));
+	if (legend->isChecked()) {
+		QPainter painter;
+		
+		QPen pen;
+		pen.setWidth(1);
+		pen.setColor(Qt::black);
+		
+		QFont font;
+		font.setWeight(75);
+		font.setPointSize(16);
+		
+		painter.begin(picture);
+		painter.setPen(pen);
+		painter.setFont(font);
+		
+		painter.fillRect(picture->width()-120, 9, 110, 2+24*colors->size(), QBrush(Qt::white));
+		painter.drawRect(picture->width()-120, 9, 110, 2+24*colors->size());
+		for (int i = 0; i < colors->size(); i++) {
+			painter.fillRect(picture->width()-118, 12+i*24, 20, 20, QBrush((*colors)[i]->palette().color(QPalette::Button)));
+			painter.drawRect(picture->width()-118, 12+i*24, 20, 20);
+			painter.drawText(picture->width()-94, 30+i*24, (*doses)[i]->text()+tr(" Gy"));
+		}
+		painter.end();
+	}
+	
+    image->setPixmap(*picture); 
     image->setFixedSize(picture->width(), picture->height());
     image->repaint();
 }
@@ -723,8 +948,8 @@ void Previewer::mouseGeom(int width, int height) {
     res = resEdit->text().toInt();
     min = dimai->getText().toDouble();
     double a = width/res + min;
-    min = dimbi->getText().toDouble();
-    double b = min + height/res;
+    double b = height/res;
+	min = dimbf->getText().toDouble();
     double c;
 
     // Create the proper label for the proper axis
@@ -735,7 +960,7 @@ void Previewer::mouseGeom(int width, int height) {
         temp += " cm y: ";
         temp += QString::number(a, 'f', 3);
         temp += " cm z: ";
-        temp += QString::number(b, 'f', 3);
+        temp += QString::number(min-b, 'f', 3);
         temp += " cm";
     }
     else if (!axis.compare("y axis")) {
@@ -745,7 +970,7 @@ void Previewer::mouseGeom(int width, int height) {
         temp += " cm y: ";
         temp += QString::number(c, 'f', 3);
         temp += " cm z: ";
-        temp += QString::number(b, 'f', 3);
+        temp += QString::number(min-b, 'f', 3);
         temp += " cm";
     }
     else if (!axis.compare("z axis")) {
@@ -753,7 +978,7 @@ void Previewer::mouseGeom(int width, int height) {
         temp += "x: ";
         temp += QString::number(a, 'f', 3);
         temp += " cm y: ";
-        temp += QString::number(b, 'f', 3);
+        temp += QString::number(min-b, 'f', 3);
         temp += " cm z: ";
         temp += QString::number(c, 'f', 3);
         temp += " cm";

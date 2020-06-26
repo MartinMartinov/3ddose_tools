@@ -90,6 +90,7 @@ public:
     // Contour Selector
     QFrame *contourFrame;
     QGridLayout *contourLayout;
+	QCheckBox *wash, *legend;
     QVector <QPushButton *> *colors;
     QVector <QLineEdit *> *doses;
 
@@ -116,11 +117,15 @@ public slots:
     void redraw();
     void saveImage();
     void closePreview();
+    void flipExtraDoses();
 
 public:
 // LAYOUT FUNCTIONS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     void createLayout();
     void connectLayout();
+	
+// OTHER~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	QColor getColor(double d, QVector <double> *t, QVector < QVector <int> > *c); // Determine color shade for wash
 
 // PROGRESS BAR~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     double *remainder;
