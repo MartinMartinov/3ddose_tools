@@ -319,20 +319,20 @@ void Interface::outputDose() {
 
 void Interface::removeDose() {
     QVector <bool> del;
-    bool flag = FALSE;
-    del.fill(FALSE, data->size());
+    bool flag = false;
+    del.fill(false, data->size());
     done.setText("The distributions ");
 
     // Remove all selected distributions
     for (int i = 0; i < data->size(); i++)
         if (doseList->selectedItems().contains(doseList->item(i))) {
-            del[i] = TRUE;
+            del[i] = true;
             if (flag) {
                 done.setText(done.text() + ", " + doseList->item(i)->text());
             }
             else {
                 done.setText(done.text() + doseList->item(i)->text());
-                flag = TRUE;
+                flag = true;
             }
         }
 
@@ -823,7 +823,7 @@ void Interface::rebinBounds() {
 }
 
 void Interface::translate() {
-    bool a = FALSE, b = FALSE, c = FALSE;
+    bool a = false, b = false, c = false;
     transx->getText().toDouble(&a);
     transy->getText().toDouble(&b);
     transz->getText().toDouble(&c);
@@ -871,26 +871,26 @@ void Interface::strip() {
 
 void Interface::normalize() {
     // Check the appropriate normalization parameters
-    bool flag = FALSE;
+    bool flag = false;
     bool a, b, c, d, e, f;
     double x, y, z, xi, yi, zi, xf, yf, zf, norm;
 
     switch (normBox->currentIndex()+1) {
     case 1:
-        a = FALSE;
+        a = false;
         factor->getText().toDouble(&a);
         if (!a) { // If the scaling factor is not a real number
             badInput.setText(tr("The scaling factor must be a ") +
                                  tr("real number."));
 			badInput.exec();
-            flag = TRUE;
+            flag = true;
         }
         break;
 
     case 2:
         for (int i = 0; i < data->size(); i++)
             if (doseList->selectedItems().contains(doseList->item(i))) {
-                a = b = c = FALSE;
+                a = b = c = false;
                 x = normx->getText().toDouble(&a);
                 y = normy->getText().toDouble(&b);
                 z = normz->getText().toDouble(&c);	
@@ -908,7 +908,7 @@ void Interface::normalize() {
                                          tr(" must be a real point within ") +
                                          tr("all selected files.  ") + bounds.toLatin1());
 					badInput.exec();
-                    flag = TRUE;
+                    flag = true;
                     i = data->size();
                 }
             }
@@ -920,7 +920,7 @@ void Interface::normalize() {
                 if ((*data)[i]->x < 0 || (*data)[i]->y < 0 || (*data)[i]->z < 0) {
                     badInput.setText(tr("The distributions must be non-zero."));
 					badInput.exec();
-                    flag = TRUE;
+                    flag = true;
                     i = data->size();
                 }
             }
@@ -929,7 +929,7 @@ void Interface::normalize() {
     case 4:
         for (int i = 0; i < data->size(); i++)
             if (doseList->selectedItems().contains(doseList->item(i))) {
-                a = b = c = d = e = f = FALSE;
+                a = b = c = d = e = f = false;
                 xi = normxi->getText().toDouble(&a);
                 yi = normyi->getText().toDouble(&b);
                 zi = normzi->getText().toDouble(&c);
@@ -954,7 +954,7 @@ void Interface::normalize() {
                                          tr("normalize must be a real point ") +
                                          tr("within all selected files.  ") + bounds.toLatin1());
 					badInput.exec();
-                    flag = TRUE;
+                    flag = true;
                     i = data->size();
                 }
             }
@@ -966,14 +966,14 @@ void Interface::normalize() {
                 if ((*data)[i]->x < 0 || (*data)[i]->y < 0 || (*data)[i]->z < 0) {
                     badInput.setText(tr("The distributions must be non-zero."));
 					badInput.exec();
-                    flag = TRUE;
+                    flag = true;
                     i = data->size();
                 }
             }
         break;
 		
     default:
-        flag = TRUE;
+        flag = true;
         break;
     }
 
@@ -993,10 +993,10 @@ void Interface::normalize() {
                 y = normy->getText().toDouble();
                 z = normz->getText().toDouble();
                 if (tri->isChecked()) {
-                    (*data)[i]->scaleAtPoint(x, y, z, 1, TRUE);
+                    (*data)[i]->scaleAtPoint(x, y, z, 1, true);
                 }
                 else {                             // Normalize to 1
-                    (*data)[i]->scaleAtPoint(x, y, z, 1, FALSE);
+                    (*data)[i]->scaleAtPoint(x, y, z, 1, false);
                 }
                 break;
 
@@ -1172,7 +1172,7 @@ void Interface::add() {
 
 void Interface::plotAxis() {
     // Check input
-    bool d = FALSE, e = FALSE, f = FALSE, g = FALSE;
+    bool d = false, e = false, f = false, g = false;
     double h = plota->getText().toDouble(&d);
     double u = plotb->getText().toDouble(&e);
     double j = plotci->getText().toDouble(&f);
@@ -1181,7 +1181,7 @@ void Interface::plotAxis() {
 
     if (!d || !e || !f || !g) {
         badInput.setText(tr("The coordinates of the data must be real ") +
-                        tr("numbers."));
+                         tr("numbers."));
 		badInput.exec();
         return;
     }
@@ -1190,23 +1190,41 @@ void Interface::plotAxis() {
 		badInput.exec();
         return;
     }
-
-    // This was to check that the line was within the phantom, but if the
-    // line selected goes outside the phantom, then no data will be read
-    /*
-    for (int i = 0; i < data->size(); i++)
-    if (doseList->selectedItems().contains(doseList->item(i)))
-        if ((*data)[i]->getIndex((!axis.compare("X"))?"Y":"X", h) < 0 ||
-        (*data)[i]->getIndex((!axis.compare("Z"))?"Y":"Z", u) < 0 ||
-        (*data)[i]->getIndex(axis, j) < 0 ||
-        (*data)[i]->getIndex(axis, k) < 0)
-        {
-        badInput.setText(tr("The parameters of the plot are ") +
-                     tr("outside of the area defined within ") +
-                     tr("the dose files."));
-        return;
-        }
-    */
+	
+	for (int i = 0; i < data->size(); i++)
+        if (doseList->selectedItems().contains(doseList->item(i))) {
+			QString bounds = QString("(Xi to Xf, Yi to Yf, Zi to Zf) ") + tr("bounds are:\n(")
+							+QString::number((*data)[i]->cx[0])+" to "+QString::number((*data)[i]->cx[(*data)[i]->x-1])+ QString(", ")
+							+QString::number((*data)[i]->cy[0])+" to "+QString::number((*data)[i]->cy[(*data)[i]->y-1])+ QString(", ")
+							+QString::number((*data)[i]->cz[0])+" to "+QString::number((*data)[i]->cz[(*data)[i]->z-1])+ QString(").");
+            if (!axis.compare("X")) {
+				if ((*data)[i]->getIndex("Y", h) < 0 || (*data)[i]->getIndex("Z", u) < 0) {
+					badInput.setText(tr("The parameters of the plot are ") +
+									 tr("outside of the area defined within ") +
+									 tr("the distribution.  ") + bounds.toLatin1());
+					badInput.exec();
+					return;
+				}
+            }
+            else if (!axis.compare("Y")) {
+				if ((*data)[i]->getIndex("X", h) < 0 || (*data)[i]->getIndex("Z", u) < 0) {
+					badInput.setText(tr("The parameters of the plot are ") +
+									 tr("outside of the area defined within ") +
+									 tr("the distribution.  ") + bounds.toLatin1());
+					badInput.exec();
+					return;
+				}
+            }
+            else if (!axis.compare("Z")) {
+				if ((*data)[i]->getIndex("X", h) < 0 || (*data)[i]->getIndex("Y", u) < 0) {
+					badInput.setText(tr("The parameters of the plot are ") +
+									 tr("outside of the area defined within ") +
+									 tr("the distribution.  ") + bounds.toLatin1());
+					badInput.exec();
+					return;
+				}
+            }
+		}
 
     QString path = QFileDialog::getSaveFileName(0, tr("Save File "), 0,
                    tr("Comma Separated Values ") +
@@ -1327,7 +1345,7 @@ void Interface::selectStatEGSFile() {
 
 void Interface::plotLine() {
     // Check input
-    bool d = FALSE, e = FALSE, f = FALSE, g = FALSE, h = FALSE, i = FALSE;
+    bool d = false, e = false, f = false, g = false, h = false, i = false;
     double xi = plotxi->getText().toDouble(&d);
     double xf = plotxf->getText().toDouble(&e);
     double yi = plotyi->getText().toDouble(&f);
@@ -1504,7 +1522,7 @@ void Interface::plotDVH() {
                 // Output data text file
                 if (dvhExtra->isChecked()) {
                     extra[0] += (*data)[i]->getTitle().
-                                leftJustified(29,' ',TRUE) + " |";
+                                leftJustified(29,' ',true) + " |";
                     extra[1] += "Value          Error          |";
                     Dx = oDx;
                     Vx = oVx;
@@ -1584,7 +1602,7 @@ void Interface::plotDVHReg() {
 
     for (int i = 0; i < data->size(); i++)
         if (doseList->selectedItems().contains(doseList->item(i))) {
-            a = b = c = d = e = f = FALSE;
+            a = b = c = d = e = f = false;
             xi = dvhxi->getText().toDouble(&a);
             yi = dvhyi->getText().toDouble(&b);
             zi = dvhzi->getText().toDouble(&c);
@@ -1681,7 +1699,7 @@ void Interface::plotDVHReg() {
 
                 if (dvhExtra->isChecked()) {
                     extra[0] += (*data)[i]->getTitle().
-                                leftJustified(29,' ',TRUE) + " |";
+                                leftJustified(29,' ',true) + " |";
                     extra[1] += "Value          Error          |";
                     Dx = oDx;
                     Vx = oVx;
@@ -1831,7 +1849,7 @@ void Interface::plotDVHMed() {
             if (doseList->selectedItems().contains(doseList->item(i))) {
                 *input << doseList->item(i)->text() << "\n";
                 if (dvhExtra->isChecked()) {
-                    extra[0] += (*data)[i]->getTitle().leftJustified(29,' ',TRUE) + " |";
+                    extra[0] += (*data)[i]->getTitle().leftJustified(29,' ',true) + " |";
                     extra[1] += "Value          Error          |";
                     Dx = oDx;
                     Vx = oVx;
@@ -2145,7 +2163,7 @@ void Interface::statH(Dose *comp) {
 
                 if (statExtra->isChecked()) {
                     extra[0] += (*data)[i]->getTitle().
-                                leftJustified(29,' ',TRUE) + " |";
+                                leftJustified(29,' ',true) + " |";
                     extra[1] += "Value          Error          |";
                     extra[2] += QString::number(totVol).leftJustified(14) + QString(" ")
                                 + "               |";
@@ -2419,7 +2437,7 @@ void Interface::statHReg(Dose *comp) {
 
                 if (statExtra->isChecked()) {
                     extra[0] += (*data)[i]->getTitle().
-                                leftJustified(29,' ',TRUE) + " |";
+                                leftJustified(29,' ',true) + " |";
                     extra[1] += "Value          Error          |";
                     extra[2] += QString::number(totVol).leftJustified(14) + QString(" ")
                                 + "               |";
@@ -2702,7 +2720,7 @@ void Interface::statHMed(Dose *comp) {
 
                 if (statExtra->isChecked()) {
                     extra[0] += (*data)[i]->getTitle().
-                                leftJustified(29,' ',TRUE) + " |";
+                                leftJustified(29,' ',true) + " |";
                     extra[1] += "Value          Error          |";
                     extra[2] += QString::number(totVol).leftJustified(14) + QString(" ")
                                 + "               |";
@@ -2865,7 +2883,7 @@ void Interface::updateProgress(double n) {
 *******************************************************************************/
 void Interface::createLayout() {
     previewer = new Previewer(this, data);
-    previewer->setDisabled(TRUE);
+    previewer->setDisabled(true);
 
     //QString style;
     //style  = "QWidget {";
@@ -2911,7 +2929,7 @@ void Interface::createLayout() {
     tri->setToolTip(tr("When this option is checked, dose at points and\n") +
                     tr("scale to point will use trilinear interpolation\n") +
                     tr("to determine dose at a point."));
-    tri->setChecked(TRUE);
+    tri->setChecked(true);
     doseList = new QListWidget();
     doseList->setSelectionMode(QAbstractItemView::ExtendedSelection);
     doseLayout = new QGridLayout();
@@ -3071,7 +3089,7 @@ void Interface::createLayout() {
     statRegWidget = new QWidget();
     statRegWidget->setLayout(statRegLayout);
     statEgsFile = new QLineEdit("EGSPhant File");
-    statEgsFile->setReadOnly(TRUE);
+    statEgsFile->setReadOnly(true);
     statEgsBrowse = new QPushButton("Browse");
     statEgsMeds = new QListWidget();
     statEgsLayout = new QGridLayout();
@@ -3176,7 +3194,7 @@ void Interface::createLayout() {
     dvhWidget = new QWidget();
     dvhWidget->setLayout(dvhLayout);
     egsDVHFile = new QLineEdit("EGSPhant File");
-    egsDVHFile->setReadOnly(TRUE);
+    egsDVHFile->setReadOnly(true);
     egsDVHBrowse = new QPushButton("Browse");
     egsDVHMeds = new QListWidget();
     egsDVHLayout = new QGridLayout();
@@ -3439,32 +3457,32 @@ void Interface::refresh() {
     }
 
     if (statAutoBounds->isChecked()) {
-        statMin->setEnabled(FALSE);
-        statMax->setEnabled(FALSE);
+        statMin->setEnabled(false);
+        statMax->setEnabled(false);
     }
     else {
-        statMin->setEnabled(TRUE);
-        statMax->setEnabled(TRUE);
+        statMin->setEnabled(true);
+        statMax->setEnabled(true);
     }
 
     if (dvhExtra->isChecked()) {
-        dvhDoseLab->setEnabled(TRUE);
-        dvhDose->setEnabled(TRUE);
-        dvhVolLab->setEnabled(TRUE);
-        dvhVol->setEnabled(TRUE);
+        dvhDoseLab->setEnabled(true);
+        dvhDose->setEnabled(true);
+        dvhVolLab->setEnabled(true);
+        dvhVol->setEnabled(true);
     }
     else {
-        dvhDoseLab->setEnabled(FALSE);
-        dvhDose->setEnabled(FALSE);
-        dvhVolLab->setEnabled(FALSE);
-        dvhVol->setEnabled(FALSE);
+        dvhDoseLab->setEnabled(false);
+        dvhDose->setEnabled(false);
+        dvhVolLab->setEnabled(false);
+        dvhVol->setEnabled(false);
     }
 }
 
 void Interface::showPreview() {
-    this->setDisabled(TRUE);
+    this->setDisabled(true);
     previewer->window->show();
     QApplication::processEvents();
-    previewer->setEnabled(TRUE);
+    previewer->setEnabled(true);
     previewer->updateDoses();
 }
