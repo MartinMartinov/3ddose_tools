@@ -392,7 +392,7 @@ void Previewer::connectLayout() {
 			
     connect(wash, SIGNAL(stateChanged(int)),
             this, SLOT(flipExtraDoses()));
-    connect(wash, SIGNAL(stateChanged(int)),
+    connect(legend, SIGNAL(stateChanged(int)),
             this, SLOT(redraw()));
 }
 
@@ -490,8 +490,7 @@ void Previewer::checkBounds() {
                 flag++;
             }
         }
-
-        redraw();
+		redraw();
     }
 }
 
