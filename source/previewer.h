@@ -91,6 +91,7 @@ public:
     QFrame *contourFrame;
     QGridLayout *contourLayout;
 	QCheckBox *wash, *legend;
+    LineInput *legUnits;
     QVector <QPushButton *> *colors;
     QVector <QLineEdit *> *doses;
 

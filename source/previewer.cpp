@@ -82,6 +82,7 @@ Previewer::~Previewer() {
     delete contourFrame;
 	delete wash;
 	delete legend;
+    delete legUnits;
     delete colors;
     delete doses;
     delete doseLayout;
@@ -181,6 +182,10 @@ void Previewer::createLayout() {
     legend = new QCheckBox("legend");
     legend->setToolTip(tr("When this option is checked, a color-dose legend\n") +
                        tr("is added to the top right of the image."));
+					   
+    legUnits = new LineInput(0, "legend units", "Gy");
+    legUnits->setToolTip(tr("These are the units that appear on the legend\n"));
+	
     colors = new QVector <QPushButton *>;
     doses = new QVector <QLineEdit *>;
     colors->resize(num);
@@ -225,6 +230,7 @@ void Previewer::createLayout() {
     }
 	contourLayout->addWidget(wash,num,0,1,2);
 	contourLayout->addWidget(legend,num+1,0,1,2);
+	contourLayout->addWidget(legUnits,num+2,0,1,2);
     contourFrame = new QFrame;
     contourFrame->setLayout(contourLayout);
 
@@ -879,11 +885,32 @@ void Previewer::updateImage() {
 		
 		painter.fillRect(picture->width()-120, 9, 110, 2+24*colors->size(), QBrush(Qt::white));
 		painter.drawRect(picture->width()-120, 9, 110, 2+24*colors->size());
-		for (int i = 0; i < colors->size(); i++) {
-			painter.fillRect(picture->width()-118, 12+i*24, 20, 20, QBrush((*colors)[i]->palette().color(QPalette::Button)));
-			painter.drawRect(picture->width()-118, 12+i*24, 20, 20);
-			painter.drawText(picture->width()-94, 30+i*24, (*doses)[i]->text()+tr(" Gy"));
+		if (!wash->isChecked()) {
+			for (int i = 0; i < colors->size(); i++) {
+				painter.fillRect(picture->width()-118, 12+i*24, 20, 20, QBrush((*colors)[i]->palette().color(QPalette::Button)));
+				painter.drawRect(picture->width()-118, 12+i*24, 20, 20);
+			}
 		}
+		else {
+			int minLine = 12+11, maxLine = minLine+(colors->size()-1)*24-1, modC, divC;
+			QColor colC;
+			painter.drawRect(picture->width()-118, minLine-1, 20, maxLine-minLine+1);
+			for (int i = minLine; i < maxLine; i++) {
+				modC = (i-minLine)%24;
+				divC = floor((i-minLine)/24.0);
+				colC.setRedF(modC/24.0*(*colors)[divC+1]->palette().color(QPalette::Button).redF()+(24-modC)/24.0*(*colors)[divC]->palette().color(QPalette::Button).redF());
+				colC.setBlueF(modC/24.0*(*colors)[divC+1]->palette().color(QPalette::Button).blueF()+(24-modC)/24.0*(*colors)[divC]->palette().color(QPalette::Button).blueF());
+				colC.setGreenF(modC/24.0*(*colors)[divC+1]->palette().color(QPalette::Button).greenF()+(24-modC)/24.0*(*colors)[divC]->palette().color(QPalette::Button).greenF());
+				painter.setPen(QPen(colC));
+				painter.drawLine(picture->width()-117, i, picture->width()-99, i);
+			}
+			painter.setPen(pen);
+			for (int i = 0; i < colors->size(); i++) {
+				painter.drawLine(picture->width()-102, 22+i*24, picture->width()-96, 22+i*24);
+			}
+		}
+		for (int i = 0; i < colors->size(); i++)
+			painter.drawText(picture->width()-94, 30+i*24, (*doses)[i]->text()+" "+legUnits->getText());
 		painter.end();
 	}
 	
