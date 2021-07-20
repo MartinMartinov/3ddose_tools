@@ -3318,6 +3318,9 @@ void Interface::createLayout() {
 }
 
 void Interface::connectLayout() {
+    connect(doseList, SIGNAL(itemSelectionChanged()),
+            this, SLOT(refresh()));
+	
     connect(normBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(refresh()));
     connect(plotBox, SIGNAL(currentIndexChanged(int)),
@@ -3363,8 +3366,8 @@ void Interface::connectLayout() {
             this, SLOT(selectEGSFile()));
     connect(statEgsBrowse, SIGNAL(clicked()),
             this, SLOT(selectStatEGSFile()));
-    connect(close, SIGNAL(clicked()),
-            this, SLOT(close()));
+    //connect(close, SIGNAL(clicked()),
+    //        this, SLOT(close()));
     connect(close, SIGNAL(clicked()),
             qApp, SLOT(quit()));
     connect(preview, SIGNAL(clicked()),
@@ -3477,6 +3480,21 @@ void Interface::refresh() {
         dvhVolLab->setEnabled(false);
         dvhVol->setEnabled(false);
     }
+	
+    if (doseList->selectedItems().size() == 0) {
+		normButton->setEnabled(false);
+		statButton->setEnabled(false);
+		plotButton->setEnabled(false);
+		mathFrame->setEnabled(false);
+		newFrame->setEnabled(false);
+	}
+	else {
+		normButton->setEnabled(true);
+		statButton->setEnabled(true);
+		plotButton->setEnabled(true);
+		mathFrame->setEnabled(true);
+		newFrame->setEnabled(true);
+	}
 }
 
 void Interface::showPreview() {
