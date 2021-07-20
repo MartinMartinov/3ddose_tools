@@ -1072,7 +1072,7 @@ void Interface::divide() {
 
     refresh();
     if (count)
-        done.setText("Dividing by " + choice + " complete.  " + count +
+        done.setText("Dividing by " + choice + " complete.  " + QString::number(count) +
                      " voxels set to zero after division by zero.");
     else {
         done.setText("Dividing by " + choice + " complete.");
