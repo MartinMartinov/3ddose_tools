@@ -49,7 +49,10 @@ Previewer::~Previewer() {
         delete (*lines)[i];
     }
     lines->clear();
-
+	
+	delete wash;
+    delete legUnits;
+	delete legend;
     delete errors;
     delete layout;
     delete close;
@@ -80,9 +83,6 @@ Previewer::~Previewer() {
     delete resFrame;
     delete contourLayout;
     delete contourFrame;
-	delete wash;
-	delete legend;
-    delete legUnits;
     delete colors;
     delete doses;
     delete doseLayout;
