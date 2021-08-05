@@ -215,7 +215,7 @@ This option requires an egsphant file to determine the media regions; loading an
   \end{itemize}
 
 
-  The DVH creation algorithm is of the order $n*log(n)$ and hence creating DVHs over a large number of voxels for several distributions can take some time.
+  The DVH creation algorithm is of the order $n*\log(n)$ and hence creating DVHs over a large number of voxels for several distributions can take some time.
   
   If output additional data is selected when the DVH is constructed, the user will be prompted to save a text file containing information such as the minimum, maximum, and average dose; average and maximum error; total volume and the number of voxels.  \GUI{} may also output the Dx, the minimum dose received by x\% of the volume, and Vx, the volume that received at least x dose.  The user can request multiple Dx and Vx by delimiting numbers with a comma \eg Dx:`90,50,25'.  The mean error output is a basic average of all the uncertainties tallied, whereas the uncertainty on the average dose is calculated in quadrature following the usual approach for error propagation.
   \end{itemize}
